@@ -33,15 +33,13 @@ namespace GlitchArtEditor
         {
             OpenFileDialog op = new OpenFileDialog();
             op.Title = "Select a picture";
-            op.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
-              "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-              "Portable Network Graphic (*.png)|*.png";
+            op.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
             if (op.ShowDialog() == true)
             {
-                string test1 = op.FileName;
-                Uri test2 = new Uri(op.FileName);
-
-                imgPhoto.Source = new BitmapImage(new Uri(op.FileName));
+                BitmapImage bit = new BitmapImage(new Uri(op.FileName));
+                imgPhoto.Source = bit;
+                imgPhoto.Width = bit.Width;
+                imgPhoto.Height = bit.Height;
             }
         }
 
@@ -49,44 +47,15 @@ namespace GlitchArtEditor
         {
             SaveFileDialog save = new SaveFileDialog();
             save.Title = "Select a picture";
-            save.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
-              "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-              "Portable Network Graphic (*.png)|*.png";
-
+            save.Filter ="JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
+            
             if (save.ShowDialog() == true)
             {
-                SaveUsingEncoder(imgPhoto, save.FileName);
-            }
-        }
-
-        void SaveUsingEncoder(FrameworkElement visual, string fileName)
-        {
-            var encoder = new JpegBitmapEncoder();
-            RenderTargetBitmap bitmap = new RenderTargetBitmap(
-                (int)visual.ActualWidth,
-                (int)visual.ActualHeight,
-                96,
-                96,
-                PixelFormats.Pbgra32);
-            bitmap.Render(visual);
-            BitmapFrame frame = BitmapFrame.Create(bitmap);
-            encoder.Frames.Add(frame);
-
-            using (var stream = File.Create(fileName))
-            {
-                encoder.Save(stream);
-            }
-        }
-
-        private void swap(object sender, RoutedEventArgs e)
-        {
-            if (Test2.Visibility == Visibility.Visible)
-            {
-                Test2.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                Test2.Visibility = Visibility.Visible;
+                //SaveUsingEncoder(imgPhoto, save.FileName);
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)imgPhoto.Source));
+                using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
+                    encoder.Save(stream);
             }
         }
     }
