@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlitchArtEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="850" Width="1020">
+        Title="MainWindow" MaxHeight="850" MaxWidth="1020" MinHeight="850" MinWidth="1020" Height="850" Width="1020">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -20,14 +20,10 @@
         </Menu>
 
         <Button Name="Test" Height="40" Grid.Row="2" Grid.Column="0"
-                 Content="Filter 1" Margin="0,0,810,670" Click="swap"/>
+                 Content="Filter 1" Margin="0,0,810,670"/>
         <Button Name="Test2" Height="40" Grid.Row="1" Grid.Column="0" 
                 Content="Filter 2" Margin="0,0,810,590" Click="ImportImage"/>
-        <Button Name="Test3" Height="40" Grid.Row="3" Grid.Column="0"
-                 Content="Filter 3" Margin="0,0,810,510" Click="swap"/>
-        <Button Name="Test4" Height="40" Grid.Row="4" Grid.Column="0" 
-                Content="Filter 4" Margin="0,0,810,430" Click="swap"/>
         <Image Name="imgPhoto"
-        Stretch="Uniform" Grid.Row="1" Margin="202,0,0,0"/>
+        Stretch="Uniform" Grid.Row="1" Margin="202,0,0,0" MaxHeight="807" MaxWidth="796" Width="807" Height="796"/>
     </Grid>
 </Window>
