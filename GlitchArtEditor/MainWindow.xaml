@@ -18,6 +18,12 @@
                 <MenuItem Header="_Export" Click="ExportImage"/>
             </MenuItem>
         </Menu>
+        <Menu Grid.Row="0" Grid.Column="1" Margin="34,0,0,0">
+            <MenuItem Header="_Filters">
+                <MenuItem Header="_Echo" Name="Echo" Click="OpenFilterWindow"/>
+                <MenuItem Header="_Reverb" Name="Reverb" Click="OpenFilterWindow"/>
+            </MenuItem>
+        </Menu>
 
         <Button Name="Test" Height="40" Grid.Row="2" Grid.Column="0"
                  Content="Filter 1" Margin="0,0,810,670"/>

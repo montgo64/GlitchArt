@@ -24,6 +24,7 @@ namespace GlitchArtEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        Image sourceImage;
         public MainWindow()
         {
             InitializeComponent();
@@ -40,6 +41,8 @@ namespace GlitchArtEditor
                 imgPhoto.Source = bit;
                 imgPhoto.Width = bit.Width;
                 imgPhoto.Height = bit.Height;
+
+                sourceImage = imgPhoto;
             }
         }
 
@@ -53,10 +56,19 @@ namespace GlitchArtEditor
             {
                 //SaveUsingEncoder(imgPhoto, save.FileName);
                 var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)imgPhoto.Source));
+                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)sourceImage.Source));
                 using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
                     encoder.Save(stream);
             }
         }
+
+        private void OpenFilterWindow(object sender, RoutedEventArgs e)
+        {
+            string objname = ((MenuItem)sender).Name;
+            FilterWindow win2 = new FilterWindow();
+            win2.FilterTitle.Text = objname;
+            win2.Show();
+        }
+        
     }
 }
