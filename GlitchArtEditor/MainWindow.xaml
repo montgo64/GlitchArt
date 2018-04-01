@@ -5,31 +5,72 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlitchArtEditor"
         mc:Ignorable="d"
-        Title="MainWindow" MaxHeight="850" MaxWidth="1020" MinHeight="850" MinWidth="1020" Height="850" Width="1020">
+        Title="MainWindow" Height="800" Width="1200" MinHeight="700" MinWidth="1100" WindowStartupLocation="CenterScreen">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Menu Grid.Row="0" Grid.Column="0">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Import" Click="ImportImage"/>
-                <MenuItem Header="_Export" Click="ExportImage"/>
+    <Window.Resources>
+        <Style x:Key="MainMenuItem" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="LightGray"/>
+            <Setter Property="Margin" Value="2,0,0,0"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style x:Key="InnerMenuItem" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="DarkGray"/>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="LightGray"/>
+            <Setter Property="Height" Value="25"/>
+        </Style>
+        
+    </Window.Resources>
+    
+    <DockPanel Background="Gray">
+        <Menu DockPanel.Dock="Top" Background="Gray" >
+            <MenuItem Header="File" Style="{StaticResource MainMenuItem}">
+                <MenuItem Header="Open" Click="OpenFile" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Save" Click="SaveFile" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Exit" Click="CloseApp" Style="{StaticResource InnerMenuItem}"/>
+            </MenuItem>
+            <MenuItem Header="Filters" Style="{StaticResource MainMenuItem}">
+                <MenuItem Header="Echo" Name="Echo" Click="AddFilter" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Reverb" Name="Reverb" Click="AddFilter" Style="{StaticResource InnerMenuItem}"/>
             </MenuItem>
         </Menu>
-        <Menu Grid.Row="0" Grid.Column="1" Margin="34,0,0,0">
-            <MenuItem Header="_Filters">
-                <MenuItem Header="_Echo" Name="Echo" Click="OpenFilterWindow"/>
-                <MenuItem Header="_Reverb" Name="Reverb" Click="OpenFilterWindow"/>
-            </MenuItem>
-        </Menu>
+        
+        <Grid DockPanel.Dock="Left" Margin="3,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
 
-        <Button Name="Test" Height="40" Grid.Row="2" Grid.Column="0"
-                 Content="Filter 1" Margin="0,0,810,670"/>
-        <Button Name="Test2" Height="40" Grid.Row="1" Grid.Column="0" 
-                Content="Filter 2" Margin="0,0,810,590" Click="ImportImage"/>
-        <Image Name="imgPhoto"
-        Stretch="Uniform" Grid.Row="1" Margin="202,0,0,0" MaxHeight="807" MaxWidth="796" Width="807" Height="796"/>
-    </Grid>
+            <Button Name="Filter1" Grid.Row="0" Grid.Column="0" Visibility="Hidden"
+                    Content="Filter 1" Margin="0,5,0,0" Click="FilterSelect"/>
+            <Button Name="Filter2" Grid.Row="1" Grid.Column="0" Visibility="Hidden"
+                    Content="Filter 2" Margin="0,5,0,0" Click="FilterSelect"/>
+            <Button Name="Filter3" Grid.Row="2" Grid.Column="0" Visibility="Hidden"
+                    Content="Filter 3" Margin="0,5,0,0" Click="FilterSelect"/>
+            <Button Name="Filter4" Grid.Row="3" Grid.Column="0" Visibility="Hidden"
+                    Content="Filter 4" Margin="0,5,0,0" Click="FilterSelect"/>
+            <Button Name="Filter5" Grid.Row="4" Grid.Column="0" Visibility="Hidden"
+                    Content="Filter 5" Margin="0,5,0,0" Click="FilterSelect"/>
+        </Grid>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,3">
+            <Label Content="Zoom" />
+            <Slider x:Name="ZoomSlider" Value="1" Minimum=".1" Maximum="2" Width="300" ValueChanged="ZoomChanged" TickPlacement="BottomRight" TickFrequency="0.1"/>
+            <TextBox x:Name="ZoomTxt" Text="{Binding ElementName=ZoomSlider, Path=Value, StringFormat={}{0:P0}, UpdateSourceTrigger=PropertyChanged}"
+                     Height="20" Width="35"/>
+        </StackPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightGray" Margin="5">
+            <Image Name="imgPhoto" Stretch="Uniform" />
+        </ScrollViewer>
+    </DockPanel>
 </Window>
