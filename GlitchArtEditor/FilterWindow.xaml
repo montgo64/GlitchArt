@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlitchArtEditor"
         mc:Ignorable="d"
-        Title="FilterWindow"  Height="360" Width="500" Margin="0">
+        Title="FilterWindow"  Height="360" Width="500" Margin="0" WindowStartupLocation="CenterScreen">
 
     <Grid Margin="0">
         <Grid.RowDefinitions>
