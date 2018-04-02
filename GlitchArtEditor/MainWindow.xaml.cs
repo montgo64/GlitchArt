@@ -63,7 +63,7 @@ namespace GlitchArtEditor
 
             if (save.ShowDialog() == true)
             {
-                var encoder = new PngBitmapEncoder();
+                var encoder = new JpegBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)sourceImage.Source));
                 using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
                     encoder.Save(stream);
@@ -92,7 +92,7 @@ namespace GlitchArtEditor
 
         }
 
-        private void AddFilter(object sender, RoutedEventArgs e)
+        public void AddFilter(String filterType)
         {
             if (numFilters + 1 > MAX_FILTERS)
             {
@@ -101,19 +101,41 @@ namespace GlitchArtEditor
             else
             {
                 numFilters++;
-                String filterType = ((MenuItem)sender).Name;
 
                 Button filter = (Button)this.FindName("Filter" + numFilters);
                 filter.Content = filterType;
                 filter.Visibility = Visibility.Visible;
+            }
+        }
 
-                OpenFilterWindow(filterType);
+        public void RemoveFilter()
+        {
+            if (numFilters <= 0)
+            {
+                MessageBox.Show("There are no filters in queue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                Button filter = (Button)this.FindName("Filter" + numFilters);
+                filter.Content = "";
+                filter.Visibility = Visibility.Hidden;
+
+                numFilters--;
             }
         }
 
         private void FilterSelect(object sender, RoutedEventArgs e)
         {
-            String filterType = ((Button)sender).Content.ToString();
+            String filterType = "";
+
+            if (sender.GetType() == typeof(MenuItem))
+            {
+                filterType = ((MenuItem)sender).Name.ToString();
+            }
+            else if (sender.GetType() == typeof(Button))
+            {
+                filterType = ((Button)sender).Content.ToString();
+            }
             OpenFilterWindow(filterType);
         }
 
@@ -121,6 +143,7 @@ namespace GlitchArtEditor
         {
             FilterWindow winFilter = new FilterWindow();
             winFilter.FilterTitle.Text = type;
+            winFilter.Owner = this;
             winFilter.Show();
         }
     }

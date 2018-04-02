@@ -15,7 +15,7 @@
             <Setter Property="FontSize" Value="14"/>
         </Style>
         <Style x:Key="InnerMenuItem" TargetType="MenuItem">
-            <Setter Property="Foreground" Value="DarkGray"/>
+            <Setter Property="Foreground" Value="Black"/>
         </Style>
         <Style TargetType="Label">
             <Setter Property="Foreground" Value="LightGray"/>
@@ -32,8 +32,8 @@
                 <MenuItem Header="Exit" Click="CloseApp" Style="{StaticResource InnerMenuItem}"/>
             </MenuItem>
             <MenuItem Header="Filters" Style="{StaticResource MainMenuItem}">
-                <MenuItem Header="Echo" Name="Echo" Click="AddFilter" Style="{StaticResource InnerMenuItem}"/>
-                <MenuItem Header="Reverb" Name="Reverb" Click="AddFilter" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Echo" Name="Echo" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Reverb" Name="Reverb" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
             </MenuItem>
         </Menu>
         

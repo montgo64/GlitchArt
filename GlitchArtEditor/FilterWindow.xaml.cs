@@ -29,6 +29,25 @@ namespace GlitchArtEditor
             InitializeComponent();
         }
 
-       
+        private void ApplyFilter(object sender, RoutedEventArgs e)
+        {
+            string filterName = FilterTitle.Text;
+            ((MainWindow)this.Owner).AddFilter(filterName);
+            
+            this.Close();
+        }
+
+        private void CancelFilter(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void RemoveFilter(object sender, RoutedEventArgs e)
+        {
+            // Use filter name or something else to denote the selected filter
+            ((MainWindow)this.Owner).RemoveFilter();
+            this.Close();
+        }
+
     }
 }
