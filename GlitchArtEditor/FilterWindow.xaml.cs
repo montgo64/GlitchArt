@@ -31,10 +31,9 @@ namespace GlitchArtEditor
 
         private void ApplyFilter(object sender, RoutedEventArgs e)
         {
-            // Apply selected filter to image
-
-            // Use filter name or something else to denote the selected filter
             string filterName = FilterTitle.Text;
+            ((MainWindow)this.Owner).AddFilter(filterName);
+            
             this.Close();
         }
 
@@ -45,10 +44,8 @@ namespace GlitchArtEditor
 
         private void RemoveFilter(object sender, RoutedEventArgs e)
         {
-            // Remove selected filter to image
-
             // Use filter name or something else to denote the selected filter
-            string filterName = FilterTitle.Text;
+            ((MainWindow)this.Owner).RemoveFilter();
             this.Close();
         }
 
