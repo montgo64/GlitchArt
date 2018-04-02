@@ -63,7 +63,7 @@ namespace GlitchArtEditor
 
             if (save.ShowDialog() == true)
             {
-                var encoder = new PngBitmapEncoder();
+                var encoder = new JpegBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create((BitmapSource)sourceImage.Source));
                 using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
                     encoder.Save(stream);
