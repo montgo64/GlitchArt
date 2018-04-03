@@ -1,0 +1,45 @@
+
+
+First method: Convert Image to byte[] array:
+
+Hide   Copy Code
+public byte[] imageToByteArray(System.Drawing.Image imageIn)
+{
+ MemoryStream ms = new MemoryStream();
+ imageIn.Save(ms,System.Drawing.Imaging.ImageFormat.Gif);
+ return  ms.ToArray();
+}
+This method uses the System.Drawing.Image.Save method to save the image to a memorystream. The memorystream can then be used to return a byte array using the ToArray() method in the MemoryStream class.
+
+Second method: Convert byte[] array to Image:
+
+Hide   Copy Code
+public Image byteArrayToImage(byte[] byteArrayIn)
+{
+     MemoryStream ms = new MemoryStream(byteArrayIn);
+     Image returnImage = Image.FromStream(ms);
+     return returnImage;
+}
+
+
+https://www.codeproject.com/Articles/15460/C-Image-to-Byte-Array-and-Byte-Array-to-Image-Conv
+
+
+
+
+var floatArray1 = new float[] { 123.45f, 123f, 45f, 1.2f, 34.5f };
+
+// create a byte array and copy the floats into it...
+var byteArray = new byte[floatArray1.Length * 4];
+Buffer.BlockCopy(floatArray1, 0, byteArray, 0, byteArray.Length);
+
+// create a second float array and copy the bytes into it...
+var floatArray2 = new float[byteArray.Length / 4];
+Buffer.BlockCopy(byteArray, 0, floatArray2, 0, byteArray.Length);
+
+// do we have the same sequence of floats that we started with?
+Console.WriteLine(floatArray1.SequenceEqual(floatArray2));    // True
+
+
+
+https://stackoverflow.com/questions/4635769/how-do-i-convert-an-array-of-floats-to-a-byte-and-back
