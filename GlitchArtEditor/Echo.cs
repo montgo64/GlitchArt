@@ -1,6 +1,6 @@
 using Effects;
 
-namespace Echo
+namespace EchoEffect
 {
     public class EchoParameters : EffectParameters
     {
@@ -59,7 +59,8 @@ namespace Echo
                 {
                     histPos = 0;
                 }
-                history[histPos] = output[i] = input[i] + history[histPos] * decay;
+                history[histPos] = input[i] + history[histPos] * decay;
+                output[i] = history[histPos];
             }
         }
 

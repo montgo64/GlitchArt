@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using EchoEffect;
 
 using System.IO;
 
@@ -46,12 +47,44 @@ namespace GlitchArtEditor
             {
                 BitmapImage bit = new BitmapImage(new Uri(op.FileName));
 
+                Echo test = new Echo();
+                //sourceImage.Source;
+
                 imgPhoto.Source = bit;
                 imgPhoto.Width = bit.Width;
                 imgPhoto.Height = bit.Height;
                 imgPhoto.LayoutTransform = scaleTransform;
+                
 
                 sourceImage = imgPhoto;
+
+                MemoryStream memStream = new MemoryStream();
+                BmpBitmapEncoder encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bit));
+                encoder.Save(memStream);
+                byte[] input = memStream.ToArray();
+                float[] output = new float[input.Length / 4];
+
+                //var newInput = new float[input.Length / 4];
+
+                float[] newInput = new float[input.Length / 4];
+                bit.CopyPixels(newInput, 7680, 0);
+                Buffer.BlockCopy(input, 0, newInput, 0, newInput.Length);
+
+                //test.ProcessBlock(ref newInput, ref output, newInput.Length);
+
+                var final = new byte[output.Length * 4];
+                Buffer.BlockCopy(output, 0, final, 0, final.Length);
+
+                MemoryStream stream = new MemoryStream(final);
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.StreamSource = stream;
+                image.EndInit();
+
+                imgPhoto.Source = image;
+
+
             }
         }
 
@@ -128,6 +161,8 @@ namespace GlitchArtEditor
         public void AddFilter(String filterType)
         {
             numFilters++;
+
+            
 
             Button filter = (Button)this.FindName("Filter" + numFilters);
             filter.Content = filterType;
