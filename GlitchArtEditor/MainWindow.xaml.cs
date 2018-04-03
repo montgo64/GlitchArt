@@ -92,24 +92,6 @@ namespace GlitchArtEditor
 
         }
 
-        public void AddFilter(String filterType)
-        {
-            numFilters++;
-
-            Button filter = (Button)this.FindName("Filter" + numFilters);
-            filter.Content = filterType;
-            filter.Visibility = Visibility.Visible;
-        }
-
-        public void RemoveFilter(String filterName)
-        {
-            Button filter = (Button)this.FindName(filterName);
-            filter.Content = "";
-            filter.Visibility = Visibility.Hidden;
-
-            numFilters--;
-        }
-
         private void FilterSelect(object sender, RoutedEventArgs e)
         {
             String filterType = "";
@@ -141,6 +123,48 @@ namespace GlitchArtEditor
             winFilter.FilterTitle.Text = type;
             winFilter.Show();
 
+        }
+
+        public void AddFilter(String filterType)
+        {
+            numFilters++;
+
+            Button filter = (Button)this.FindName("Filter" + numFilters);
+            filter.Content = filterType;
+            filter.Visibility = Visibility.Visible;
+        }
+
+        public void RemoveFilter(String filterName)
+        {
+            Button filter = (Button)this.FindName(filterName);
+            filter.Content = "";
+            filter.Visibility = Visibility.Hidden;
+
+            numFilters--;
+
+            resetQueue();
+        }
+
+        private void resetQueue()
+        {
+            int filterCount = numFilters + 1;
+            if (filterCount > 1)
+            {
+                for (int i = 1; i < filterCount; i++)
+                {
+                    Button filter = (Button)this.FindName("Filter" + i);
+                    int nextPlacement = i + 1;
+
+                    if (filter.Visibility == Visibility.Hidden && i != filterCount)
+                    {
+                        Button nextFilter = (Button)this.FindName("Filter" + nextPlacement);
+                        filter.Content = nextFilter.Content;
+
+                        filter.Visibility = Visibility.Visible;
+                        nextFilter.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
         }
     }
 }
