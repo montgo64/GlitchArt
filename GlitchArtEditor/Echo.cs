@@ -1,29 +1,84 @@
+using Effects;
 
-
-public class Echo : Effect
+namespace Echo
 {
-    private double delay;
-    private double decay;
-    private double[] history;
-    private int histPos;
-    private int histLen;
-
-    Echo()
+    public class EchoParameters : EffectParameters
     {
-        delay = 1.0;
-        decay = 0.5;
-        histPos = 0;
+        public double delay;
+        public float decay;
+        public int histLen;
+
+        public EchoParameters()
+        {
+            delay = 1.0;
+            decay = 0.5f;
+            histLen = 10;
+        }
+
+        public EchoParameters(double del, float dec, int hl)
+        {
+            delay = del;
+            decay = dec;
+            histLen = hl;
+        }
     }
 
-    void ProcessBlock(ref float[] input, ref float[] output, int length)
+    public class Echo : Effect
     {
-        for (int i = 0; i < length; i++, histPos++)
+        private double delay;
+        private float decay;
+        private float[] history;
+        private int histPos;
+        private int histLen;
+
+        public Echo()
         {
-            if (histPos == histLen)
+            delay = 1.0;
+            decay = 0.5f;
+            histPos = 0;
+            histLen = 10;
+            history = new float[10];
+        }
+
+
+        public Echo(ref EchoParameters ep)
+        {
+            delay = ep.delay;
+            decay = ep.decay;
+            histPos = 0;
+            histLen = ep.histLen;
+            history = new float[ep.histLen];
+
+        }
+
+        public void ProcessBlock(ref float[] input, ref float[] output, int length)
+        {
+            for (int i = 0; i < length; i++, histPos++)
             {
-                histPos = 0;
+                if (histPos == histLen)
+                {
+                    histPos = 0;
+                }
+                history[histPos] = output[i] = input[i] + history[histPos] * decay;
             }
-            history[histPos] = output[i] = input[i] + history[histPos] * decay;
+        }
+
+
+        public void SetParameters(ref EffectParameters param)
+        {
+            EchoParameters ep = (EchoParameters)param;
+
+            delay = ep.delay;
+            decay = ep.decay;
+            histPos = 0;
+            histLen = ep.histLen;
+            history = new float[ep.histLen];
+        }
+
+        public EffectParameters GetParameters()
+        {
+            return (EffectParameters)new EchoParameters(delay, decay, histLen);
+
         }
     }
 }
