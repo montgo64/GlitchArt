@@ -94,57 +94,53 @@ namespace GlitchArtEditor
 
         public void AddFilter(String filterType)
         {
-            if (numFilters + 1 > MAX_FILTERS)
-            {
-                MessageBox.Show("Already have maximum number of filters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                numFilters++;
+            numFilters++;
 
-                Button filter = (Button)this.FindName("Filter" + numFilters);
-                filter.Content = filterType;
-                filter.Visibility = Visibility.Visible;
-            }
+            Button filter = (Button)this.FindName("Filter" + numFilters);
+            filter.Content = filterType;
+            filter.Visibility = Visibility.Visible;
         }
 
-        public void RemoveFilter()
+        public void RemoveFilter(String filterName)
         {
-            if (numFilters <= 0)
-            {
-                MessageBox.Show("There are no filters in queue.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                Button filter = (Button)this.FindName("Filter" + numFilters);
-                filter.Content = "";
-                filter.Visibility = Visibility.Hidden;
+            Button filter = (Button)this.FindName(filterName);
+            filter.Content = "";
+            filter.Visibility = Visibility.Hidden;
 
-                numFilters--;
-            }
+            numFilters--;
         }
 
         private void FilterSelect(object sender, RoutedEventArgs e)
         {
             String filterType = "";
+            String elementType = "";
 
             if (sender.GetType() == typeof(MenuItem))
             {
+                if (numFilters + 1 > MAX_FILTERS)
+                {
+                    MessageBox.Show("Already have maximum number of filters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                
                 filterType = ((MenuItem)sender).Name.ToString();
+                elementType = "MenuItem";
             }
             else if (sender.GetType() == typeof(Button))
             {
                 filterType = ((Button)sender).Content.ToString();
+                elementType = ((Button)sender).Name.ToString(); ;
             }
-            OpenFilterWindow(filterType);
+            OpenFilterWindow(filterType, elementType);
         }
 
-        private void OpenFilterWindow(String type)
+        private void OpenFilterWindow(String type, String elementType)
         {
-            FilterWindow winFilter = new FilterWindow();
-            winFilter.FilterTitle.Text = type;
+            FilterWindow winFilter = new FilterWindow(elementType);
             winFilter.Owner = this;
+            winFilter.FilterTitle.Text = type;
             winFilter.Show();
+
         }
     }
 }
