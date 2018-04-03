@@ -37,6 +37,10 @@ namespace GlitchArtEditor
             numFilters = 0;
         }
 
+        /// <summary>
+        /// Method to open file from user's computer. Must be JPEG file.
+        /// Converts the JPEG to Bitmap Image
+        /// </summary>
         private void OpenFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog op = new OpenFileDialog();
@@ -44,17 +48,98 @@ namespace GlitchArtEditor
             op.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
             if (op.ShowDialog() == true)
             {
+                //Gets bitmap image from user
                 BitmapImage bit = new BitmapImage(new Uri(op.FileName));
 
+                //Converts Bitmap Image to byte array and then to wav file. Saves file as "test.wav"
+                convertBMPtoWav(bit);
+
+
+                //Following code is to test that conversions work.
+                //Converts the wav file back to a byte array back to bitmap
+                //Sets it to sourceImage so you can see the image when opened
+                //BitmapImage bitt = convertWavtoBMP();
+                //imgPhoto.Source = bitt;
+                //imgPhoto.Width = bitt.Width;
+                //imgPhoto.Height = bitt.Height;
+                //imgPhoto.LayoutTransform = scaleTransform;
+                //sourceImage = imgPhoto;
+
+                //Sets user's image as sourceImage
                 imgPhoto.Source = bit;
                 imgPhoto.Width = bit.Width;
                 imgPhoto.Height = bit.Height;
                 imgPhoto.LayoutTransform = scaleTransform;
-
                 sourceImage = imgPhoto;
             }
         }
 
+        /// <summary>
+        /// Method to convert Bitmap image to a wav file. This method is
+        /// called when a filter needs to be added to the picture.
+        /// </summary>
+        private void convertBMPtoWav(BitmapImage bit)
+        {
+            //convert bmp to byte array
+            byte[] byteArr = convertBMPtoByteArray(bit);
+
+            //write bytes to wav file
+            using (FileStream bytetoimage = File.Create("test.wav"))
+            {
+                bytetoimage.Write(byteArr, 0 , byteArr.Length);
+            }
+            
+        }
+
+        /// <summary>
+        /// Method to convert wav file to Bitmap image. This method is called
+        /// after a filter is applied to the audio file.
+        /// </summary>
+        private BitmapImage convertWavtoBMP() 
+        {
+            //convert wav to byte array
+            byte[] audiobyte = File.ReadAllBytes("test.wav");
+            
+            //convert byte array to bitmap
+            BitmapImage img = convertByteArraytoBMP(audiobyte);
+      
+            return img;
+        }
+
+        /// <summary>
+        /// Method to convert Bitmap image to a byte array
+        /// </summary>
+        private byte[] convertBMPtoByteArray(BitmapImage bit)
+        {
+            byte[] byteArray;
+            
+            using(MemoryStream ms = new MemoryStream())
+            {
+                JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bit));
+                encoder.Save(ms);
+                byteArray = ms.ToArray();
+                return byteArray;
+            }
+
+        }
+
+        /// <summary>
+        /// Method to convert byte array to Bitmap image
+        /// </summary>
+        private BitmapImage convertByteArraytoBMP(byte[] byteArray) 
+        {
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.StreamSource = new MemoryStream(byteArray);
+            image.EndInit();
+            return image;
+        }
+
+        /// <summary>
+        /// Method to save the file
+        /// </summary>
         private void SaveFile(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
@@ -70,6 +155,9 @@ namespace GlitchArtEditor
             }
         }
 
+        /// <summary>
+        /// Method to close application
+        /// </summary>
         private void CloseApp(object sender, RoutedEventArgs e)
         {
             this.Close();
