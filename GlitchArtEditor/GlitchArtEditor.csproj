@@ -66,6 +66,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Reverb.cs" />
     <Compile Include="Echo.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="FilterWindow.xaml.cs">
