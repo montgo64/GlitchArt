@@ -36,8 +36,8 @@
             <Slider Maximum="100"  TickFrequency="1"  IsSnapToTickEnabled="True" Name="value3" Width="398" Height="20" />
         </DockPanel>
 
-        <Button Name="Apply" Height="40" Content="Apply" Margin="10,140,340,0" Click="ApplyFilter" FontSize="20"/>
-        <Button Name="Cancel" Height="40" Content="Cancel" Margin="170,140,170,0" Click="CancelFilter" FontSize="20"/>
-        <Button Name="Rmove" Height="40" Content="Remove" Margin="340,140,10,0 " Click="RemoveFilter" FontSize="20"/>
+        <Button Name="ApplyButton" Height="40" Content="Apply" Margin="10,140,340,0" Click="ApplyFilter" FontSize="20"/>
+        <Button Name="CancelButton" Height="40" Content="Cancel" Margin="170,140,170,0" Click="CancelFilter" FontSize="20"/>
+        <Button Name="RemoveButton" Height="40" Content="Remove" Margin="340,140,10,0 " Click="RemoveFilter" FontSize="20"/>
     </Grid>
 </Window>

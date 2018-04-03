@@ -24,16 +24,29 @@ namespace GlitchArtEditor
     /// </summary>
     public partial class FilterWindow : Window
     {
-        public FilterWindow()
+        String elementType;
+        public FilterWindow(String type)
         {
             InitializeComponent();
+            elementType = type;
+
+            if (elementType == "MenuItem")
+            {
+                RemoveButton.IsEnabled = false;
+            }
+            else
+            {
+                RemoveButton.IsEnabled = true;
+            }
         }
 
         private void ApplyFilter(object sender, RoutedEventArgs e)
         {
-            string filterName = FilterTitle.Text;
-            ((MainWindow)this.Owner).AddFilter(filterName);
-            
+            if (elementType == "MenuItem")
+            {
+                string filterName = FilterTitle.Text;
+                ((MainWindow)this.Owner).AddFilter(filterName);
+            }
             this.Close();
         }
 
@@ -45,7 +58,7 @@ namespace GlitchArtEditor
         private void RemoveFilter(object sender, RoutedEventArgs e)
         {
             // Use filter name or something else to denote the selected filter
-            ((MainWindow)this.Owner).RemoveFilter();
+            ((MainWindow)this.Owner).RemoveFilter(elementType);
             this.Close();
         }
 
