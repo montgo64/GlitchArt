@@ -1,6 +1,6 @@
 using Effects;
 
-namespace Echo
+namespace EchoEffect
 {
     public class EchoParameters : EffectParameters
     {
@@ -36,8 +36,8 @@ namespace Echo
             delay = 1.0;
             decay = 0.5f;
             histPos = 0;
-            histLen = 10;
-            history = new float[10];
+            histLen = 10000;
+            history = new float[histLen];
         }
 
 
@@ -51,7 +51,7 @@ namespace Echo
 
         }
 
-        public void ProcessBlock(ref float[] input, ref float[] output, int length)
+        public void ProcessBlock(ref FloatToInt[] input, ref FloatToInt[] output, int length)
         {
             for (int i = 0; i < length; i++, histPos++)
             {
@@ -59,7 +59,8 @@ namespace Echo
                 {
                     histPos = 0;
                 }
-                history[histPos] = output[i] = input[i] + history[histPos] * decay;
+                history[histPos] = input[i].FloatVal + (history[histPos] * decay);
+                output[i].FloatVal = history[histPos];
             }
         }
 

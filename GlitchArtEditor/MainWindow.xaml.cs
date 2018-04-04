@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
+using Effects;
+using EchoEffect;
 using System.IO;
 
 using Microsoft.Win32;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace GlitchArtEditor
 {
@@ -26,9 +21,10 @@ namespace GlitchArtEditor
     {
         private const int MAX_FILTERS = 5;
 
-        public Image sourceImage;
+        public System.Windows.Controls.Image sourceImage;
         private ScaleTransform scaleTransform;
         private int numFilters;
+        private string filename;
 
         public MainWindow()
         {
@@ -52,6 +48,7 @@ namespace GlitchArtEditor
                 imgPhoto.LayoutTransform = scaleTransform;
 
                 sourceImage = imgPhoto;
+                filename = op.FileName;
             }
         }
 
@@ -120,18 +117,35 @@ namespace GlitchArtEditor
         {
             FilterWindow winFilter = new FilterWindow(elementType);
             winFilter.Owner = this;
-            winFilter.FilterTitle.Text = type;
-            winFilter.Show();
 
+            // Will need to expand this to a new function, for each filter
+            winFilter.FilterTitle.Text = type;
+            if (type.Equals("Echo"))
+            {
+                winFilter.Parameter1.Text = "Delay";
+                winFilter.value1.Value = 1;
+
+                winFilter.Parameter2.Text = "Decay";
+                winFilter.value2.Value = 0.5;
+
+                winFilter.Parameter3.Text = "History Length";
+                winFilter.value3.Value = 10;
+            }
+            winFilter.Show();
         }
 
-        public void AddFilter(String filterType)
+        public void AddFilter(String filterType, double param1, float param2, int param3)
         {
             numFilters++;
 
             Button filter = (Button)this.FindName("Filter" + numFilters);
             filter.Content = filterType;
             filter.Visibility = Visibility.Visible;
+
+            if (filterType.Equals("Echo"))
+            {
+                applyEcho(param1, param2, param3);
+            }
         }
 
         public void RemoveFilter(String filterName)
@@ -165,6 +179,52 @@ namespace GlitchArtEditor
                     }
                 }
             }
+        }
+
+        private void applyEcho(double param1, float param2, int param3)
+        {
+            Echo echo = new Echo();
+            int meh = param3 * 1000;
+            EffectParameters parameters = new EchoParameters(param1, param2, param3*1000);
+            echo.SetParameters(ref parameters);
+
+            Bitmap bm = new Bitmap(filename);
+
+            FloatToInt[] bmvals = new FloatToInt[bm.Width * bm.Height];
+            int index = 0;
+
+            for (int h = 0; h < bm.Height; h++)
+            {
+                for (int w = 0; w < bm.Width; w++)
+                {
+                    bmvals[index].IntVal = bm.GetPixel(w, h).ToArgb();
+                    index++;
+                }
+            }
+
+            FloatToInt[] output = new FloatToInt[bmvals.Length];
+
+            echo.ProcessBlock(ref bmvals, ref output, bmvals.Length);
+            index = 0;
+
+            for (int h = 0; h < bm.Height; h++)
+            {
+                for (int w = 0; w < bm.Width; w++)
+                {
+
+                    bm.SetPixel(w, h, System.Drawing.Color.FromArgb(output[index].IntVal));
+                    index++;
+                }
+            }
+
+            var stream = new MemoryStream();
+            bm.Save(stream, ImageFormat.Png);
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.StreamSource = stream;
+            image.EndInit();
+
+            imgPhoto.Source = image;
         }
     }
 }
