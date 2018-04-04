@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using EchoEffect;
-
 using System.IO;
 
 using Microsoft.Win32;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace GlitchArtEditor
 {
@@ -27,7 +20,7 @@ namespace GlitchArtEditor
     {
         private const int MAX_FILTERS = 5;
 
-        public Image sourceImage;
+        public System.Windows.Controls.Image sourceImage;
         private ScaleTransform scaleTransform;
         private int numFilters;
 
@@ -46,7 +39,6 @@ namespace GlitchArtEditor
             if (op.ShowDialog() == true)
             {
                 BitmapImage bit = new BitmapImage(new Uri(op.FileName));
-
                 Echo test = new Echo();
                 //sourceImage.Source;
 
@@ -54,7 +46,6 @@ namespace GlitchArtEditor
                 imgPhoto.Width = bit.Width;
                 imgPhoto.Height = bit.Height;
                 imgPhoto.LayoutTransform = scaleTransform;
-                
 
                 sourceImage = imgPhoto;
 
@@ -62,28 +53,47 @@ namespace GlitchArtEditor
                 BmpBitmapEncoder encoder = new BmpBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(bit));
                 encoder.Save(memStream);
-                byte[] input = memStream.ToArray();
-                float[] output = new float[input.Length / 4];
 
-                //var newInput = new float[input.Length / 4];
 
-                float[] newInput = new float[input.Length / 4];
-                bit.CopyPixels(newInput, 7680, 0);
-                Buffer.BlockCopy(input, 0, newInput, 0, newInput.Length);
+                Bitmap bm = new Bitmap(op.FileName);
 
-                //test.ProcessBlock(ref newInput, ref output, newInput.Length);
+                int[] bmvals = new int[bm.Width * bm.Height];
+                int index = 0;
 
-                var final = new byte[output.Length * 4];
-                Buffer.BlockCopy(output, 0, final, 0, final.Length);
+                for (int w = 0; w < bm.Width; w++)
+                {
+                    for (int h = 0; h < bm.Height; h++)
+                    {
+                        bmvals[index] = bm.GetPixel(w, h).ToArgb();
+                        index++;
+                    }
+                }
 
-                MemoryStream stream = new MemoryStream(final);
-                BitmapImage image = new BitmapImage();
+                float[] input = new float[bmvals.Length];
+                float[] output = new float[bmvals.Length];
+
+                Buffer.BlockCopy(bmvals, 0, input, 0, bmvals.Length);
+                test.ProcessBlock(ref input, ref output, input.Length);
+                Buffer.BlockCopy(output, 0, bmvals, 0, output.Length);
+                index = 0;
+
+                for (int w = 0; w < bm.Width; w++)
+                {
+                    for (int h = 0; h < bm.Height; h++)
+                    {
+                        bm.SetPixel(w, h, System.Drawing.Color.FromArgb(bmvals[index]));
+                        index++;
+                    }
+                }
+
+                var stream = new MemoryStream();
+                bm.Save(stream, ImageFormat.Png);
+                var image = new BitmapImage();
                 image.BeginInit();
                 image.StreamSource = stream;
                 image.EndInit();
 
                 imgPhoto.Source = image;
-
 
             }
         }

@@ -36,8 +36,8 @@ namespace EchoEffect
             delay = 1.0;
             decay = 0.5f;
             histPos = 0;
-            histLen = 10;
-            history = new float[10];
+            histLen = 100000;
+            history = new float[histLen];
         }
 
 
@@ -59,7 +59,7 @@ namespace EchoEffect
                 {
                     histPos = 0;
                 }
-                history[histPos] = input[i] + history[histPos] * decay;
+                history[histPos] = input[i] + (history[histPos] * decay);
                 output[i] = history[histPos];
             }
         }
