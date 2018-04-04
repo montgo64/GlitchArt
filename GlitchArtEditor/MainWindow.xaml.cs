@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Effects;
 using EchoEffect;
 using System.IO;
 
@@ -57,31 +58,30 @@ namespace GlitchArtEditor
 
                 Bitmap bm = new Bitmap(op.FileName);
 
-                int[] bmvals = new int[bm.Width * bm.Height];
+                FloatToInt[] bmvals = new FloatToInt[bm.Width * bm.Height];
                 int index = 0;
 
-                for (int w = 0; w < bm.Width; w++)
-                {
+
                     for (int h = 0; h < bm.Height; h++)
                     {
-                        bmvals[index] = bm.GetPixel(w, h).ToArgb();
+                    for (int w = 0; w < bm.Width; w++)
+                    {
+                        bmvals[index].IntVal = bm.GetPixel(w, h).ToArgb();
                         index++;
                     }
                 }
 
-                float[] input = new float[bmvals.Length];
-                float[] output = new float[bmvals.Length];
+                FloatToInt[] output = new FloatToInt[bmvals.Length];
 
-                Buffer.BlockCopy(bmvals, 0, input, 0, bmvals.Length);
-                test.ProcessBlock(ref input, ref output, input.Length);
-                Buffer.BlockCopy(output, 0, bmvals, 0, output.Length);
+                test.ProcessBlock(ref bmvals, ref output, bmvals.Length);
                 index = 0;
 
-                for (int w = 0; w < bm.Width; w++)
+                for (int h = 0; h < bm.Height; h++)
                 {
-                    for (int h = 0; h < bm.Height; h++)
-                    {
-                        bm.SetPixel(w, h, System.Drawing.Color.FromArgb(bmvals[index]));
+                    for (int w = 0; w < bm.Width; w++)
+                {
+
+                        bm.SetPixel(w, h, System.Drawing.Color.FromArgb(output[index].IntVal));
                         index++;
                     }
                 }

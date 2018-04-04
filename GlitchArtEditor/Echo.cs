@@ -36,7 +36,7 @@ namespace EchoEffect
             delay = 1.0;
             decay = 0.5f;
             histPos = 0;
-            histLen = 100000;
+            histLen = 10000;
             history = new float[histLen];
         }
 
@@ -51,7 +51,7 @@ namespace EchoEffect
 
         }
 
-        public void ProcessBlock(ref float[] input, ref float[] output, int length)
+        public void ProcessBlock(ref FloatToInt[] input, ref FloatToInt[] output, int length)
         {
             for (int i = 0; i < length; i++, histPos++)
             {
@@ -59,8 +59,8 @@ namespace EchoEffect
                 {
                     histPos = 0;
                 }
-                history[histPos] = input[i] + (history[histPos] * decay);
-                output[i] = history[histPos];
+                history[histPos] = input[i].FloatVal + (history[histPos] * decay);
+                output[i].FloatVal = history[histPos];
             }
         }
 
