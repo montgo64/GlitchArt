@@ -16,6 +16,7 @@ namespace GlitchArtEditor
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
+    /// Main GUI
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -26,6 +27,9 @@ namespace GlitchArtEditor
         private int numFilters;
         private string filename;
 
+        /// <summary>
+        /// Initializes main GUI window
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -33,6 +37,11 @@ namespace GlitchArtEditor
             numFilters = 0;
         }
 
+        /// <summary>
+        /// This method opens file for user to select a jpeg image.
+        /// The image and filename are stored for filter use. This
+        /// method is called when user selects File-Open.
+        /// </summary>
         private void OpenFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog op = new OpenFileDialog();
@@ -52,6 +61,10 @@ namespace GlitchArtEditor
             }
         }
 
+        /// <summary>
+        /// This method saves the image as a jpeg to the user's selected path.
+        /// This method is called when user selects File-Save.
+        /// </summary>
         private void SaveFile(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
@@ -67,11 +80,20 @@ namespace GlitchArtEditor
             }
         }
 
+        /// <summary>
+        /// This method closes the GUI. This method is called when user
+        /// selected File-Exit.
+        /// </summary>
         private void CloseApp(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
+        /// <summary>
+        /// This method changes the zoom of the image in the GUI.
+        /// Zoom can be changed between 10% to 200% using slider
+        /// at the bottom of the GUI.
+        /// </summary>
         private void ZoomChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (sourceImage != null)
@@ -89,6 +111,13 @@ namespace GlitchArtEditor
 
         }
 
+        /// <summary>
+        /// This method is called when the user selects any filter in
+        /// the Filters menu. It checks if the maximum number of filters
+        /// has already been applied and sends error message to screen.
+        /// If under the max, it stores which filter has been selected
+        /// and makes a call to open that filter's parameter window.
+        /// </summary>
         private void FilterSelect(object sender, RoutedEventArgs e)
         {
             String filterType = "";
@@ -113,12 +142,21 @@ namespace GlitchArtEditor
             OpenFilterWindow(filterType, elementType);
         }
 
+        /// <summary>
+        /// This method opens a selected filter's window where the user
+        /// can set the parameters for the filter. Once the parameters 
+        /// are set, the user can then apply, cancel, or remove the filter.
+        /// This method is called when a user selects a new filter under
+        /// the filters menu or when a user selects an already applied filter
+        /// in the filter queue.
+        /// </summary>
         private void OpenFilterWindow(String type, String elementType)
         {
             FilterWindow winFilter = new FilterWindow(elementType);
             winFilter.Owner = this;
 
             // Will need to expand this to a new function, for each filter
+            // Currently only applies to Echo filter
             winFilter.FilterTitle.Text = type;
             if (type.Equals("Echo"))
             {
@@ -134,6 +172,13 @@ namespace GlitchArtEditor
             winFilter.Show();
         }
 
+        /// <summary>
+        /// This method adds the selected filter to the image. This
+        /// method is called once the user has set the parameters in
+        /// the filter's window and hit Apply. This method takes the
+        /// parameters and makes the call to apply the filter to the
+        /// image.
+        /// </summary>
         public void AddFilter(String filterType, double param1, float param2, int param3)
         {
             numFilters++;
@@ -142,12 +187,19 @@ namespace GlitchArtEditor
             filter.Content = filterType;
             filter.Visibility = Visibility.Visible;
 
+            //Currently only applies to Echo filter
             if (filterType.Equals("Echo"))
             {
                 applyEcho(param1, param2, param3);
             }
         }
 
+        /// <summary>
+        /// This method removes the selected filter from the image.
+        /// This method can only be used when a filter has already
+        /// been applied and is called when the user hits the Remove
+        /// button in the filter's window.
+        /// </summary>
         public void RemoveFilter(String filterName)
         {
             Button filter = (Button)this.FindName(filterName);
@@ -159,6 +211,11 @@ namespace GlitchArtEditor
             resetQueue();
         }
 
+        /// <summary>
+        /// This method resets the filter queue when a filter has
+        /// been removed. It shifts the remaining filters up the
+        /// queue. 
+        /// </summary>
         private void resetQueue()
         {
             int filterCount = numFilters + 1;
@@ -181,6 +238,14 @@ namespace GlitchArtEditor
             }
         }
 
+        /// <summary>
+        /// This method applies the echo filter to the image.
+        /// It gets the parameters from the echo filter window
+        /// set by the user. This method is called once a user
+        /// hits apply in the filter window. When this method
+        /// is complete, the output image will now have the echo
+        /// effect applied to it.
+        /// </summary>
         private void applyEcho(double param1, float param2, int param3)
         {
             Echo echo = new Echo();
@@ -188,11 +253,14 @@ namespace GlitchArtEditor
             EffectParameters parameters = new EchoParameters(param1, param2, param3*1000);
             echo.SetParameters(ref parameters);
 
+            //Converts image to bitmap
             Bitmap bm = new Bitmap(filename);
 
+            //Creates floattoint array with image size
             FloatToInt[] bmvals = new FloatToInt[bm.Width * bm.Height];
             int index = 0;
 
+            //Converts bitmap image to array
             for (int h = 0; h < bm.Height; h++)
             {
                 for (int w = 0; w < bm.Width; w++)
@@ -202,11 +270,14 @@ namespace GlitchArtEditor
                 }
             }
 
+            //Creates floattoint array for filter output
             FloatToInt[] output = new FloatToInt[bmvals.Length];
 
+            //Calls to apply echo filter
             echo.ProcessBlock(ref bmvals, ref output, bmvals.Length);
             index = 0;
 
+            //Converts array with filter back to bitmap
             for (int h = 0; h < bm.Height; h++)
             {
                 for (int w = 0; w < bm.Width; w++)
@@ -217,6 +288,7 @@ namespace GlitchArtEditor
                 }
             }
 
+            //Converts bitmap back to image
             var stream = new MemoryStream();
             bm.Save(stream, ImageFormat.Png);
             var image = new BitmapImage();
@@ -224,6 +296,7 @@ namespace GlitchArtEditor
             image.StreamSource = stream;
             image.EndInit();
 
+            //Sets filtered image to source image
             imgPhoto.Source = image;
         }
     }

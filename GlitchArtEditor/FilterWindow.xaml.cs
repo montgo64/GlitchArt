@@ -20,11 +20,17 @@ using Microsoft.Win32;
 namespace GlitchArtEditor
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for FilterWindow.xaml
+    /// GUI for setting filters for an image.
     /// </summary>
     public partial class FilterWindow : Window
     {
         String elementType;
+
+        /// <summary>
+        /// Initializes filter window. If call comes from
+        /// the filter menu, the remove button is unenabled.
+        /// </summary>
         public FilterWindow(String type)
         {
             InitializeComponent();
@@ -40,6 +46,12 @@ namespace GlitchArtEditor
             }
         }
 
+        /// <summary>
+        /// This method adds the selected filter to the image. This
+        /// method is called when the user hits the Apply button. 
+        /// This method takes the parameters and makes the call to
+        /// apply the filter to the image.
+        /// </summary>
         private void ApplyFilter(object sender, RoutedEventArgs e)
         {
             if (elementType == "MenuItem")
@@ -50,11 +62,21 @@ namespace GlitchArtEditor
             this.Close();
         }
 
+        /// <summary>
+        /// This method closes out of the filter window. This
+        /// method is called when the user hits the Cancel button.
+        /// </summary>
         private void CancelFilter(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
+        /// <summary>
+        /// This method removes the selected filter from the image.
+        /// This method is called when the user hits the Remove
+        /// button in the filter's window. It is unenabled when a
+        /// new filter is being added.
+        /// </summary>
         private void RemoveFilter(object sender, RoutedEventArgs e)
         {
             // Use filter name or something else to denote the selected filter
