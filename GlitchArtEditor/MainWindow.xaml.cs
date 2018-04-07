@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Collections.Generic;
 
 namespace GlitchArtEditor
 {
@@ -27,6 +28,10 @@ namespace GlitchArtEditor
         private int numFilters;
         private string filename;
 
+        private FilterWindowData filterWindowData = new FilterWindowData();
+
+
+
         /// <summary>
         /// Initializes main GUI window
         /// </summary>
@@ -35,6 +40,7 @@ namespace GlitchArtEditor
             InitializeComponent();
             scaleTransform = new ScaleTransform();
             numFilters = 0;
+            
         }
 
         /// <summary>
@@ -150,24 +156,22 @@ namespace GlitchArtEditor
         /// the filters menu or when a user selects an already applied filter
         /// in the filter queue.
         /// </summary>
-        private void OpenFilterWindow(String type, String elementType)
+        private void OpenFilterWindow(String filterType, String inputElement)
         {
-            FilterWindow winFilter = new FilterWindow(elementType);
+            FilterWindow winFilter = new FilterWindow(inputElement);
             winFilter.Owner = this;
 
-            // Will need to expand this to a new function, for each filter
-            // Currently only applies to Echo filter
-            winFilter.FilterTitle.Text = type;
-            if (type.Equals("Echo"))
+            winFilter.FilterTitle.Text = filterType;
+            if (filterWindowData.containsKey(filterType))
             {
-                winFilter.Parameter1.Text = "Delay";
-                winFilter.value1.Value = 1;
+                winFilter.Parameter1.Text = filterWindowData.getParameters(filterType)[0];
+                winFilter.value1.Value    = filterWindowData.getDefaults(filterType)[0];
 
-                winFilter.Parameter2.Text = "Decay";
-                winFilter.value2.Value = 0.5;
+                winFilter.Parameter2.Text = filterWindowData.getParameters(filterType)[1];
+                winFilter.value2.Value    = filterWindowData.getDefaults(filterType)[1];
 
-                winFilter.Parameter3.Text = "History Length";
-                winFilter.value3.Value = 10;
+                winFilter.Parameter3.Text = filterWindowData.getParameters(filterType)[2];
+                winFilter.value3.Value    = filterWindowData.getDefaults(filterType)[2];
             }
             winFilter.Show();
         }

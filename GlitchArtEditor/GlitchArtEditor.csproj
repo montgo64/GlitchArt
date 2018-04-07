@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="Echo.cs" />
     <Compile Include="Effect.cs" />
+    <Compile Include="FilterWindowData.cs" />
     <Compile Include="FilterWindow.xaml.cs">
       <DependentUpon>FilterWindow.xaml</DependentUpon>
     </Compile>
