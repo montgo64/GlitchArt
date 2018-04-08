@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Effects;
 using EchoEffect;
+using AmplifyEffect;
 using System.IO;
 
 using Microsoft.Win32;
@@ -191,6 +192,15 @@ namespace GlitchArtEditor
                 winFilter.Parameter3.Text = "History Length";
                 winFilter.value3.Value = 10;
             }
+
+            if (type.Equals("Amplify"))
+            {
+                winFilter.Parameter1.Text = "Amplification (dB)";
+                winFilter.value1.Value = 3.0;
+
+                winFilter.Parameter2.Visibility = Visibility.Hidden;
+                winFilter.Parameter3.Visibility = Visibility.Hidden;
+            }
             winFilter.Show();
         }
 
@@ -215,6 +225,12 @@ namespace GlitchArtEditor
                 EffectParameters parameters = new EchoParameters(param1, param2, param3*1000);
                 applyEcho("Filter" + numFilters, parameters);
             }
+
+            if (filterType.Equals("Amplify"))
+            {
+                EffectParameters parameters = new AmplifyParameters(param1, 0, 0);
+                applyAmplify("Filter" + numFilters, parameters);
+            }
         }
 
         /// <summary>
@@ -230,7 +246,7 @@ namespace GlitchArtEditor
             }
             if (filterType.Equals("Amplify"))
             {
-
+                applyAmplify("Filter" + numFilters, param);
             }
             if (filterType.Equals("Amplify"))
             {
@@ -379,6 +395,33 @@ namespace GlitchArtEditor
 
             //Calls to apply echo filter
             echo.ProcessBlock(ref bmvals, ref output, bmvals.Length);
+
+            var image = convertArraytoImage(output);
+
+            //Sets filtered image to source image
+            imgPhoto.Source = image;
+        }
+
+        private void applyAmplify(string filterKey, EffectParameters parameters)
+        {
+            Amplify amplify = new Amplify();
+
+            //Adds filter and corresponding parameters to the filter list
+            if (!filtersList.ContainsKey(filterKey)) 
+            {
+                filterInfo info = new filterInfo("Amplify", parameters);
+                filtersList.Add(filterKey, info);
+            }
+
+            amplify.SetParameters(ref parameters);
+
+            FloatToInt[] bmvals = convertImagetoArray();
+
+            //Creates floattoint array for filter output
+            FloatToInt[] output = new FloatToInt[bmvals.Length];
+
+            //Calls to apply echo filter
+            amplify.ProcessBlock(ref bmvals, ref output, bmvals.Length);
 
             var image = convertArraytoImage(output);
 
