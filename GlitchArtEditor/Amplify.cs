@@ -1,4 +1,4 @@
-using Effects;
+﻿using Effects;
 
 namespace AmplifyEffect
 {
@@ -7,22 +7,20 @@ namespace AmplifyEffect
     /// </summary>
     public class AmplifyParameters : EffectParameters
     {
-        public double mRatio;
+        public float mRatio;
 
         /// <summary>
-        /// Default constructor. Sets delay to 1.0, decay
-        /// to 0.5f, and history length to 10.
+        /// Default constructor. Sets mRatio to 3.0.
         /// </summary>
         public AmplifyParameters()
         {
-            mRatio = 3.0;
+            mRatio = 3.0f;
         }
 
         /// <summary>
-        /// Constructor. Sets parameters to delay, decay,
-        /// and history length.
+        /// Constructor. Sets parameter to mRatio.
         /// </summary>
-        public AmplifyParameters(double rat, int dec, int hl)
+        public AmplifyParameters(float rat)
         {
             mRatio = rat;
         }
@@ -33,15 +31,14 @@ namespace AmplifyEffect
     /// </summary>
     public class Amplify : Effect
     {
-        private double mRatio;
+        private float mRatio;
 
         /// <summary>
-        /// Default constructor. Sets delay to 1.0, decay 
-        /// to 0.5f, history length to 10000.
+        /// Default constructor. Sets mRatio to 3.0
         /// </summary>
         public Amplify()
         {
-            mRatio = 3.0;
+            mRatio = 3.0f;
         }
 
         /// <summary>
@@ -62,7 +59,7 @@ namespace AmplifyEffect
         {
             for (int i = 0; i < length; i++)
             {
-                output[0][i].FloatVal = input[0][i].FloatVal * mRatio;
+                output[i].FloatVal = (input[i].FloatVal * mRatio);
             }
         }
 
@@ -81,7 +78,7 @@ namespace AmplifyEffect
         /// </summary>
         public EffectParameters GetParameters()
         {
-            return (EffectParameters)new AmplifyParameters(mRatio, 0, 0);
+            return (EffectParameters)new AmplifyParameters(mRatio);
 
         }
     }

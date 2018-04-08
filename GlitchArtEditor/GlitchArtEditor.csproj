@@ -63,10 +63,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Amplify.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BassBoost.cs" />
     <Compile Include="Echo.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="FilterWindow.xaml.cs">

@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using Effects;
 using EchoEffect;
 using AmplifyEffect;
+using BassBoostEffect;
 using System.IO;
 
 using Microsoft.Win32;
@@ -199,7 +200,20 @@ namespace GlitchArtEditor
                 winFilter.value1.Value = 3.0;
 
                 winFilter.Parameter2.Visibility = Visibility.Hidden;
+                winFilter.value2.Visibility = Visibility.Hidden;
                 winFilter.Parameter3.Visibility = Visibility.Hidden;
+                winFilter.value3.Visibility = Visibility.Hidden;
+            }
+
+            if (type.Equals("Bass Boost"))
+            {
+                winFilter.Parameter1.Text = "Bass (dB)";
+                winFilter.value1.Value = 50.0;
+
+                winFilter.Parameter2.Visibility = Visibility.Hidden;
+                winFilter.value2.Visibility = Visibility.Hidden;
+                winFilter.Parameter3.Visibility = Visibility.Hidden;
+                winFilter.value3.Visibility = Visibility.Hidden;
             }
             winFilter.Show();
         }
@@ -228,8 +242,14 @@ namespace GlitchArtEditor
 
             if (filterType.Equals("Amplify"))
             {
-                EffectParameters parameters = new AmplifyParameters(param1, 0, 0);
+                EffectParameters parameters = new AmplifyParameters((float) param1);
                 applyAmplify("Filter" + numFilters, parameters);
+            }
+
+            if (filterType.Equals("Bass Boost"))
+            {
+                EffectParameters parameters = new BassBoostParameters(param1);
+                applyBassBoost("Filter" + numFilters, parameters);
             }
         }
 
@@ -248,9 +268,9 @@ namespace GlitchArtEditor
             {
                 applyAmplify("Filter" + numFilters, param);
             }
-            if (filterType.Equals("Amplify"))
+            if (filterType.Equals("Bass Boost"))
             {
-
+                applyBassBoost("Filter" + numFilters, param);
             }
         }
 
@@ -402,6 +422,14 @@ namespace GlitchArtEditor
             imgPhoto.Source = image;
         }
 
+        /// <summary>
+        /// This method applies amplify filter to the image.
+        /// It gets the parameters from amplify filter window
+        /// set by the user. This method is called once a user
+        /// hits apply in the filter window. When this method
+        /// is complete, the output image will now have the
+        /// amplify effect applied to it.
+        /// </summary>
         private void applyAmplify(string filterKey, EffectParameters parameters)
         {
             Amplify amplify = new Amplify();
@@ -422,6 +450,41 @@ namespace GlitchArtEditor
 
             //Calls to apply echo filter
             amplify.ProcessBlock(ref bmvals, ref output, bmvals.Length);
+
+            var image = convertArraytoImage(output);
+
+            //Sets filtered image to source image
+            imgPhoto.Source = image;
+        }
+
+        /// <summary>
+        /// This method applies bass/treble filter to the image.
+        /// It gets the parameters from bass/treble filter window
+        /// set by the user. This method is called once a user
+        /// hits apply in the filter window. When this method
+        /// is complete, the output image will now have the
+        /// bass/treble effect applied to it.
+        /// </summary>
+        private void applyBassBoost(string filterKey, EffectParameters parameters)
+        {
+            BassBoost BassBoost = new BassBoost();
+
+            //Adds filter and corresponding parameters to the filter list
+            if (!filtersList.ContainsKey(filterKey))
+            {
+                filterInfo info = new filterInfo("Bass Boost", parameters);
+                filtersList.Add(filterKey, info);
+            }
+
+            BassBoost.SetParameters(ref parameters);
+
+            FloatToInt[] bmvals = convertImagetoArray();
+
+            //Creates floattoint array for filter output
+            FloatToInt[] output = new FloatToInt[bmvals.Length];
+
+            //Calls to apply echo filter
+            BassBoost.ProcessBlock(ref bmvals, ref output, bmvals.Length);
 
             var image = convertArraytoImage(output);
 
