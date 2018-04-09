@@ -29,7 +29,7 @@ namespace GlitchArtEditor
         private string filename;
 
         private FilterWindowData filterWindowData = new FilterWindowData();
-
+        Dictionary<String, double[]> filters;
 
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace GlitchArtEditor
         /// parameters and makes the call to apply the filter to the
         /// image.
         /// </summary>
-        public void AddFilter(String filterType, double param1, float param2, int param3)
+        public void AddFilter(String filterType, double param1, double param2, double param3)
         {
             numFilters++;
 
@@ -191,11 +191,7 @@ namespace GlitchArtEditor
             filter.Content = filterType;
             filter.Visibility = Visibility.Visible;
 
-            //Currently only applies to Echo filter
-            if (filterType.Equals("Echo"))
-            {
-                applyEcho(param1, param2, param3);
-            }
+            applyFilters();
         }
 
         /// <summary>
@@ -250,13 +246,8 @@ namespace GlitchArtEditor
         /// is complete, the output image will now have the echo
         /// effect applied to it.
         /// </summary>
-        private void applyEcho(double param1, float param2, int param3)
+        private void applyFilters()
         {
-            Echo echo = new Echo();
-            int meh = param3 * 1000;
-            EffectParameters parameters = new EchoParameters(param1, param2, param3*1000);
-            echo.SetParameters(ref parameters);
-
             //Converts image to bitmap
             Bitmap bm = new Bitmap(filename);
 
@@ -277,8 +268,12 @@ namespace GlitchArtEditor
             //Creates floattoint array for filter output
             FloatToInt[] output = new FloatToInt[bmvals.Length];
 
-            //Calls to apply echo filter
-            echo.ProcessBlock(ref bmvals, ref output, bmvals.Length);
+            foreach (KeyValuePair<String, double[]> entry in filters)
+            {
+                runFilter(entry.Key, ref bmvals, ref output, bmvals.Length);
+                bmvals = output;
+            }
+            
             index = 0;
 
             //Converts array with filter back to bitmap
@@ -286,7 +281,6 @@ namespace GlitchArtEditor
             {
                 for (int w = 0; w < bm.Width; w++)
                 {
-
                     bm.SetPixel(w, h, System.Drawing.Color.FromArgb(output[index].IntVal));
                     index++;
                 }
@@ -302,6 +296,22 @@ namespace GlitchArtEditor
 
             //Sets filtered image to source image
             imgPhoto.Source = image;
+        }
+
+        private void runFilter(String filter, ref FloatToInt[] input, ref FloatToInt[] output, int length)
+        {
+            switch (filter)
+            {
+                case "Echo":
+                    Echo echo = new Echo();
+                    EffectParameters parameters = new EchoParameters(filters[filter][2], (float)filters[filter][1], (int)filters[filter][2] * 1000);
+                    echo.SetParameters(ref parameters);
+                    echo.ProcessBlock(ref input, ref output, output.Length);
+                    break;
+                default:
+                    Console.WriteLine("Invalid filter");
+                    break;
+            }
         }
     }
 }

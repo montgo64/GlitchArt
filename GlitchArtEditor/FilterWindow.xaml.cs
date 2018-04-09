@@ -57,7 +57,7 @@ namespace GlitchArtEditor
             if (elementType == "MenuItem")
             {
                 string filterName = FilterTitle.Text;
-                ((MainWindow)this.Owner).AddFilter(filterName, (double) value1.Value, (float)value2.Value, (int)value3.Value);
+                ((MainWindow)this.Owner).AddFilter(filterName, value1.Value, value2.Value, value3.Value);
             }
             this.Close();
         }
