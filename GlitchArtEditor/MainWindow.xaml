@@ -87,8 +87,14 @@
                     Content="Filter 5" Margin="0,5,0,0" Click="FilterSelect"/>
         </Grid>
 
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
-                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightGray" Margin="5,0,5,5">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,3">
+            <Label Content="Zoom" />
+            <Slider x:Name="ZoomSlider" Value="1" Minimum=".1" Maximum="2" Width="300" ValueChanged="ZoomChanged" TickPlacement="BottomRight" TickFrequency="0.1"/>
+            <TextBox x:Name="ZoomTxt" Text="100%" LostFocus="ZoomChanged" Height="20" Width="35" KeyDown="OnKeyDownHandler"/>
+        </StackPanel>
+
+        <ScrollViewer Name="ImageScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightGray" Margin="5">
             <Image Name="imgPhoto" Stretch="Uniform" />
         </ScrollViewer>
     </DockPanel>

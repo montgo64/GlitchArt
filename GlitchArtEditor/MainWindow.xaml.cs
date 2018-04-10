@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows.Input;
 
 namespace GlitchArtEditor
 {
@@ -60,6 +61,7 @@ namespace GlitchArtEditor
                 filename = op.FileName;
 
                 StatusText.Content = "Select a filter to apply to image. ";
+                SetZoom();
             }
         }
 
@@ -91,15 +93,16 @@ namespace GlitchArtEditor
             this.Close();
         }
 
+
         /// <summary>
-        /// This method changes the zoom of the image in the GUI.
-        /// Zoom can be changed between 10% to 200% using slider
-        /// at the bottom of the GUI.
+        /// This method sets the default zoom amount for the newly opened
+        /// image and links it to the zoom functionality.
         /// </summary>
-        private void ZoomChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void SetZoom()
         {
             if (sourceImage != null)
             {
+                // Link image to zoom slider
                 Binding bindX = new Binding();
                 bindX.Source = ZoomSlider;
                 bindX.Path = new PropertyPath("Value");
@@ -109,8 +112,51 @@ namespace GlitchArtEditor
                 bindY.Source = ZoomSlider;
                 bindY.Path = new PropertyPath("Value");
                 BindingOperations.SetBinding(scaleTransform, ScaleTransform.ScaleYProperty, bindY);
-            }
 
+                // Set default zoom to proper value
+                double wRatio = Math.Round(ImageScroll.ActualWidth / imgPhoto.Width, 2) - 0.03;
+                double hRatio = Math.Round(ImageScroll.ActualHeight / imgPhoto.Height, 2) - 0.03;
+
+                ZoomSlider.Value = wRatio < hRatio ? wRatio : hRatio;
+                ZoomTxt.Text = ZoomSlider.Value * 100 + "%";
+            }
+        }
+
+        /// <summary>
+        /// This method changes the zoom of the image in the GUI.
+        /// Zoom can be changed between 10% to 200% using the Slider
+        /// or TextBox at the bottom of the GUI.
+        /// </summary>
+        private void ZoomChanged(object sender, RoutedEventArgs e)
+        {
+            if (ZoomSlider != null && ZoomTxt != null)
+            {
+                Control control = (Control)sender;
+
+                if (control.Name.Equals("ZoomSlider"))
+                {
+                    ZoomTxt.Text = Math.Round(ZoomSlider.Value * 100, 0) + "%";
+                }
+                else if (control.Name.Equals("ZoomTxt"))
+                {
+                    String zoomAmount = ZoomTxt.Text.ToString().Replace("%", "");
+                    ZoomSlider.Value = Convert.ToDouble(zoomAmount) / 100;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method is triggered when the ENTER button is pressed
+        /// while using the zoom TextBox. It fires the ZoomChanged
+        /// method and removes focus from the Control.
+        /// </summary>
+        private void OnKeyDownHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return && ((Control)sender).Name.Equals("ZoomTxt"))
+            {
+                ZoomChanged(sender, e);
+                Keyboard.ClearFocus();
+            }
         }
 
         /// <summary>
