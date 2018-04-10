@@ -58,6 +58,8 @@ namespace GlitchArtEditor
 
                 sourceImage = imgPhoto;
                 filename = op.FileName;
+
+                StatusText.Content = "Select a filter to apply to image. ";
             }
         }
 
@@ -190,8 +192,10 @@ namespace GlitchArtEditor
             //Currently only applies to Echo filter
             if (filterType.Equals("Echo"))
             {
-                applyEcho(param1, param2, param3);
+                ApplyEcho(param1, param2, param3);
             }
+
+            StatusText.Content = "Applied the " + filterType + " filter. ";
         }
 
         /// <summary>
@@ -208,7 +212,7 @@ namespace GlitchArtEditor
 
             numFilters--;
 
-            resetQueue();
+            ResetQueue();
         }
 
         /// <summary>
@@ -216,7 +220,7 @@ namespace GlitchArtEditor
         /// been removed. It shifts the remaining filters up the
         /// queue. 
         /// </summary>
-        private void resetQueue()
+        private void ResetQueue()
         {
             int filterCount = numFilters + 1;
             if (filterCount > 1)
@@ -246,7 +250,7 @@ namespace GlitchArtEditor
         /// is complete, the output image will now have the echo
         /// effect applied to it.
         /// </summary>
-        private void applyEcho(double param1, float param2, int param3)
+        private void ApplyEcho(double param1, float param2, int param3)
         {
             Echo echo = new Echo();
             int meh = param3 * 1000;
