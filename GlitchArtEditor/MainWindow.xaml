@@ -56,8 +56,7 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal"  Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0">
                 <Label Content="Zoom" VerticalAlignment="Center"/>
                 <Slider x:Name="ZoomSlider" Value="1" Minimum=".1" Maximum="2" Width="300" ValueChanged="ZoomChanged" TickPlacement="BottomRight" TickFrequency="0.1" Opacity="0.75"/>
-                <TextBox x:Name="ZoomTxt" Text="{Binding ElementName=ZoomSlider, Path=Value, StringFormat={}{0:P0}, UpdateSourceTrigger=PropertyChanged}"
-                     Height="20" Width="35"/>
+                <TextBox x:Name="ZoomTxt" Text="100%" LostFocus="ZoomChanged" Height="20" Width="35" KeyDown="OnKeyDownHandler"/>
             </StackPanel>
         </Grid>
 
@@ -86,12 +85,6 @@
             <Button Name="Filter5" Grid.Row="5" Grid.Column="0" Visibility="Hidden"
                     Content="Filter 5" Margin="0,5,0,0" Click="FilterSelect"/>
         </Grid>
-
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,3">
-            <Label Content="Zoom" />
-            <Slider x:Name="ZoomSlider" Value="1" Minimum=".1" Maximum="2" Width="300" ValueChanged="ZoomChanged" TickPlacement="BottomRight" TickFrequency="0.1"/>
-            <TextBox x:Name="ZoomTxt" Text="100%" LostFocus="ZoomChanged" Height="20" Width="35" KeyDown="OnKeyDownHandler"/>
-        </StackPanel>
 
         <ScrollViewer Name="ImageScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="LightGray" Margin="5">
