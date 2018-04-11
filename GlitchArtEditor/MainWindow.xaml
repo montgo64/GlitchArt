@@ -38,6 +38,8 @@
                 <MenuItem Header="Exit" Click="CloseApp" Style="{StaticResource InnerMenuItem}"/>
             </MenuItem>
             <MenuItem Header="Filters" Style="{StaticResource MainMenuItem}">
+                <MenuItem Header="Amplify" Name="Amplify" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Bass Boost" Name="BassBoost" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Echo" Name="Echo" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Reverb" Name="Reverb" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
             </MenuItem>
