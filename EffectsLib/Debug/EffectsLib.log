@@ -1,0 +1,21 @@
+﻿  stdafx.cpp
+  EffectsLib.cpp
+  dllmain.cpp
+  Generating Code...
+  snd.c
+  reverb.c
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(57): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(108): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(118): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(137): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(155): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(172): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(226): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(227): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(214): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(305): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+c:\users\me\documents\github\glitchart\effectslib\reverb.c(771): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  mem.c
+  Generating Code...
+     Creating library C:\Users\Me\Documents\GitHub\GlitchArt\Debug\EffectsLib.lib and object C:\Users\Me\Documents\GitHub\GlitchArt\Debug\EffectsLib.exp
+  EffectsLib.vcxproj -> C:\Users\Me\Documents\GitHub\GlitchArt\Debug\EffectsLib.dll
