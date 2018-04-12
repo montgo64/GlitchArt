@@ -28,7 +28,6 @@ namespace GlitchArtEditor
 
         public System.Windows.Controls.Image sourceImage;
         private BitmapImage originalImage;
-        private Bitmap bitmap;
         private ScaleTransform scaleTransform;
         private int numFilters;
         private string filename;
@@ -85,7 +84,6 @@ namespace GlitchArtEditor
 
                 StatusText.Content = "Select a filter to apply to image. ";
                 SetZoom();
-                bitmap = new Bitmap(filename);
             }
         }
 
@@ -282,59 +280,28 @@ namespace GlitchArtEditor
             filter.Visibility = Visibility.Visible;
 
             EffectParameters parameters;
-
-            //filterInfo info = new filterInfo(filtersList["Filter" + nextPlacement].effect, filtersList["Filter" + nextPlacement].param);
-            //filtersList.Add(filter, info);
-
-            //Currently only applies to Echo filter
+            
             if (filterType.Equals("Echo"))
             {
                 parameters = new EchoParameters(param1, param2, param3 * 1000);
-
-                //filterInfo info = new filterInfo(filterType, parameters);
-                //ApplyEcho("Filter" + numFilters, parameters);
             }
 
             else if (filterType.Equals("Amplify"))
             {
                 parameters = new AmplifyParameters((float)param1);
-                //applyAmplify("Filter" + numFilters, parameters);
             }
-
-
+            
             //if (filterType.Equals("Bass Boost"))
             else  // Using else until placeholder is figured out
             {
                 parameters = new BassBoostParameters(param1);
-                //applyBassBoost("Filter" + numFilters, parameters);
             }
 
             filterInfo info = new filterInfo(filterType, parameters);
             filtersList.Add("Filter" + numFilters, info);
-            applyFilters();
-        }
-
-        /// <summary>
-        /// This method adds the filters to the image. This method is
-        /// called when the filter queue is reset by a filter being
-        /// removed. This applies the other filters back to the image.
-        /// </summary>
-        public void AddFilter(String filterType, EffectParameters param)
-        {
-            if (filterType.Equals("Echo"))
-            {
-                ApplyEcho("Filter" + numFilters, param);
-            }
-            if (filterType.Equals("Amplify"))
-            {
-                applyAmplify("Filter" + numFilters, param);
-            }
-            if (filterType.Equals("Bass Boost"))
-            {
-                applyBassBoost("Filter" + numFilters, param);
-            }
-
             StatusText.Content = "Applied the " + filterType + " filter. ";
+
+            applyFilters();
         }
 
         /// <summary>
@@ -385,17 +352,11 @@ namespace GlitchArtEditor
                         //Reapplies filter to image and stores filter info in new place number
                         filterInfo info = new filterInfo(filtersList["Filter" + nextPlacement].effect, filtersList["Filter" + nextPlacement].param);
                         filtersList.Add("Filter" + i, info);
-                        //AddFilter(info.effect, info.param);
                         filtersList.Remove("Filter" + nextPlacement);
 
                         filter.Visibility = Visibility.Visible;
                         nextFilter.Visibility = Visibility.Hidden;
                     }
-
-                    //else
-                    //{
-                    //    AddFilter(filtersList["Filter" + i].effect, filtersList["Filter" + i].param);
-                    //}
                 }
                 applyFilters();
             }
@@ -404,7 +365,7 @@ namespace GlitchArtEditor
         /// <summary>
         /// This method converts the image to an array.
         /// </summary>
-        private FloatToInt[] convertImagetoArray()
+        private FloatToInt[] convertImagetoArray(Bitmap bitmap)
         {
             //Creates floattoint array with image size
             FloatToInt[] bmvals = new FloatToInt[bitmap.Width * bitmap.Height];
@@ -427,7 +388,7 @@ namespace GlitchArtEditor
         /// <summary>
         /// This method converts the array to an image.
         /// </summary>
-        private BitmapImage convertArraytoImage(FloatToInt[] array)
+        private BitmapImage convertArraytoImage(FloatToInt[] array, Bitmap bitmap)
         {
             int index = 0;
 
@@ -452,130 +413,11 @@ namespace GlitchArtEditor
             return image;
         }
 
-        /// <summary>
-        /// This method applies the echo filter to the image.
-        /// It gets the parameters from the echo filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the echo
-        /// effect applied to it.
-        /// </summary>
-        private void ApplyEcho(string filterKey, EffectParameters parameters)
-        {
-            Echo echo = new Echo();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey))
-            {
-                filterInfo info = new filterInfo("Echo", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            echo.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            echo.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
-        }
-
-        /// <summary>
-        /// This method applies amplify filter to the image.
-        /// It gets the parameters from amplify filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the
-        /// amplify effect applied to it.
-        /// </summary>
-        private void applyAmplify(string filterKey, EffectParameters parameters)
-        {
-            Amplify amplify = new Amplify();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey))
-            {
-                filterInfo info = new filterInfo("Amplify", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            amplify.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            amplify.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
-        }
-
-        /// <summary>
-        /// This method applies bass/treble filter to the image.
-        /// It gets the parameters from bass/treble filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the
-        /// bass/treble effect applied to it.
-        /// </summary>
-        private void applyBassBoost(string filterKey, EffectParameters parameters)
-        {
-            BassBoost BassBoost = new BassBoost();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey))
-            {
-                filterInfo info = new filterInfo("Bass Boost", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            BassBoost.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            BassBoost.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
-        }
-
-
         private void applyFilters()
         {
             //Converts image to bitmap
-            Bitmap bm = new Bitmap(filename);
-
-            //Creates floattoint array with image size
-            FloatToInt[] bmvals = new FloatToInt[bm.Width * bm.Height];
-            int index = 0;
-
-            //Converts bitmap image to array
-            for (int h = 0; h < bm.Height; h++)
-            {
-                for (int w = 0; w < bm.Width; w++)
-                {
-                    bmvals[index].IntVal = bm.GetPixel(w, h).ToArgb();
-                    index++;
-                }
-            }
+            Bitmap bitmap = new Bitmap(filename);
+            FloatToInt[] bmvals = convertImagetoArray(bitmap);
 
             //Creates floattoint array for filter output
             FloatToInt[] output = new FloatToInt[bmvals.Length];
@@ -588,25 +430,7 @@ namespace GlitchArtEditor
                 bmvals = output;
             }
 
-            index = 0;
-
-            //Converts array with filter back to bitmap
-            for (int h = 0; h < bm.Height; h++)
-            {
-                for (int w = 0; w < bm.Width; w++)
-                {
-                    bm.SetPixel(w, h, System.Drawing.Color.FromArgb(output[index].IntVal));
-                    index++;
-                }
-            }
-
-            //Converts bitmap back to image
-            var stream = new MemoryStream();
-            bm.Save(stream, ImageFormat.Png);
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.StreamSource = stream;
-            image.EndInit();
+            BitmapImage image = convertArraytoImage(bmvals, bitmap);
 
             //Sets filtered image to source image
             imgPhoto.Source = image;
