@@ -9,6 +9,7 @@ using Effects;
 using EchoEffect;
 using AmplifyEffect;
 using BassBoostEffect;
+using ReverbEffect;
 using System.IO;
 
 using Microsoft.Win32;
@@ -86,6 +87,19 @@ namespace GlitchArtEditor
                 StatusText.Content = "Select a filter to apply to image. ";
                 SetZoom();
                 bitmap = new Bitmap(filename);
+
+                FloatToInt[] bmvals = convertImagetoArray();
+
+                //Creates floattoint array for filter output
+                FloatToInt[] output = new FloatToInt[bmvals.Length];
+                Reverb rv = new Reverb();
+                //Calls to apply echo filter
+                rv.ProcessBlock(ref bmvals, ref output, bmvals.Length);
+
+                var image = convertArraytoImage(output);
+
+                //Sets filtered image to source image
+                imgPhoto.Source = image;
             }
         }
 

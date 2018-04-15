@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Reverb
+namespace ReverbEffect
 {
     class ReverbParameters : EffectParameters
     {
@@ -32,12 +32,13 @@ namespace Reverb
     }
 
 
-    class Reverb : Effect
+    unsafe class Reverb : Effect
     {
-        [DllImport("EffectsLib.dll")]
-        public static extern void reverb_helper_def(IntPtr inbuf, IntPtr outbuf, int length);
-        [DllImport("EffectsLib.dll")]
-        public static extern void reverb_helper_param(IntPtr inbuf, IntPtr outbuf, int length, int rate,
+        
+        [DllImport("EffectsLib.dll", CallingConvention = CallingConvention.StdCall)]
+        public static extern void reverb_helper_def(void* inbuf, void* outbuf, int length);
+        [DllImport("EffectsLib.dll", CallingConvention = CallingConvention.StdCall)]
+        public static extern void reverb_helper_param(void* inbuf, void* outbuf, int length, int rate,
         int oversamplefactor, float ertolate, float erefwet, float dry, float ereffactor,
         float erefwidth, float width, float wet, float wander, float bassb, float spin, float inputlpf,
         float basslpf, float damplpf, float outputlpf, float rt60, float delay);
@@ -136,16 +137,21 @@ namespace Reverb
 
         public void ProcessBlock(ref FloatToInt[] input, ref FloatToInt[] output, int length)
         {
-            IntPtr inBuf = new IntPtr(input[0].IntVal);
-            IntPtr outBuf = new IntPtr(output[0].IntVal);
-            if (use_defaults)
-            {
-                reverb_helper_def(inBuf, outBuf, length);
-            }
-            else
-            {
-                reverb_helper_param(inBuf, outBuf, length, rate, oversamplefactor, ertolate, erefwet, dry, ereffactor, erefwidth, width,
-                wet, wander, bassb, spin, inputlpf, basslpf, damplpf, outputlpf, rt60, delay);
+
+                fixed (void* inBuf = &input[0]) {
+
+                fixed (void* outBuf = &output[0]) {
+                    if (use_defaults)
+                    {
+
+                        reverb_helper_def(inBuf, outBuf, length);
+                    }
+                    else
+                    {
+                        reverb_helper_param(inBuf, outBuf, length, rate, oversamplefactor, ertolate, erefwet, dry, ereffactor, erefwidth, width,
+                            wet, wander, bassb, spin, inputlpf, basslpf, damplpf, outputlpf, rt60, delay);
+                    }
+                }
             }
         }
 
