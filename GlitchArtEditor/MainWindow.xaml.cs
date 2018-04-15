@@ -28,11 +28,10 @@ namespace GlitchArtEditor
 
         public System.Windows.Controls.Image sourceImage;
         private BitmapImage originalImage;
-        private Bitmap bitmap;
         private ScaleTransform scaleTransform;
         private int numFilters;
         private string filename;
-       
+
         /// <summary>
         /// Struct for information of the filter.
         /// Contains filter name and parameters.
@@ -43,7 +42,7 @@ namespace GlitchArtEditor
             public EffectParameters param;
 
             public filterInfo(string eff, EffectParameters par)
-            {   
+            {
                 effect = eff;
                 param = par;
             }
@@ -85,7 +84,6 @@ namespace GlitchArtEditor
 
                 StatusText.Content = "Select a filter to apply to image. ";
                 SetZoom();
-                bitmap = new Bitmap(filename);
             }
         }
 
@@ -202,14 +200,14 @@ namespace GlitchArtEditor
                     MessageBox.Show("Already have maximum number of filters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                
+
                 filterType = ((MenuItem)sender).Header.ToString();
                 elementType = "MenuItem";
             }
             else if (sender.GetType() == typeof(Button))
             {
                 filterType = ((Button)sender).Content.ToString();
-                elementType = ((Button)sender).Name.ToString(); ;
+                elementType = ((Button)sender).Name.ToString();
             }
             OpenFilterWindow(filterType, elementType);
         }
@@ -281,47 +279,29 @@ namespace GlitchArtEditor
             filter.Content = filterType;
             filter.Visibility = Visibility.Visible;
 
-            //Currently only applies to Echo filter
+            EffectParameters parameters;
+            
             if (filterType.Equals("Echo"))
             {
-                EffectParameters parameters = new EchoParameters(param1, param2, param3*1000);
-                ApplyEcho("Filter" + numFilters, parameters);
+                parameters = new EchoParameters(param1, param2, param3 * 1000);
             }
 
-            if (filterType.Equals("Amplify"))
+            else if (filterType.Equals("Amplify"))
             {
-                EffectParameters parameters = new AmplifyParameters((float) param1);
-                applyAmplify("Filter" + numFilters, parameters);
+                parameters = new AmplifyParameters((float)param1);
+            }
+            
+            //if (filterType.Equals("Bass Boost"))
+            else  // Using else until placeholder is figured out
+            {
+                parameters = new BassBoostParameters(param1);
             }
 
-            if (filterType.Equals("Bass Boost"))
-            {
-                EffectParameters parameters = new BassBoostParameters(param1);
-                applyBassBoost("Filter" + numFilters, parameters);
-            }
-        }
-
-        /// <summary>
-        /// This method adds the filters to the image. This method is
-        /// called when the filter queue is reset by a filter being
-        /// removed. This applies the other filters back to the image.
-        /// </summary>
-        public void AddFilter(String filterType, EffectParameters param)
-        {
-            if (filterType.Equals("Echo"))
-            {
-                ApplyEcho("Filter" + numFilters, param);
-            }
-            if (filterType.Equals("Amplify"))
-            {
-                applyAmplify("Filter" + numFilters, param);
-            }
-            if (filterType.Equals("Bass Boost"))
-            {
-                applyBassBoost("Filter" + numFilters, param);
-            }
-
+            filterInfo info = new filterInfo(filterType, parameters);
+            filtersList.Add("Filter" + numFilters, info);
             StatusText.Content = "Applied the " + filterType + " filter. ";
+
+            applyFilters();
         }
 
         /// <summary>
@@ -371,25 +351,21 @@ namespace GlitchArtEditor
 
                         //Reapplies filter to image and stores filter info in new place number
                         filterInfo info = new filterInfo(filtersList["Filter" + nextPlacement].effect, filtersList["Filter" + nextPlacement].param);
-                        AddFilter(info.effect, info.param);
+                        filtersList.Add("Filter" + i, info);
                         filtersList.Remove("Filter" + nextPlacement);
 
                         filter.Visibility = Visibility.Visible;
                         nextFilter.Visibility = Visibility.Hidden;
                     }
-
-                    else
-                    {
-                        AddFilter(filtersList["Filter" + i].effect, filtersList["Filter" + i].param);
-                    }
                 }
+                applyFilters();
             }
         }
 
         /// <summary>
         /// This method converts the image to an array.
         /// </summary>
-        private FloatToInt[] convertImagetoArray()
+        private FloatToInt[] convertImagetoArray(Bitmap bitmap)
         {
             //Creates floattoint array with image size
             FloatToInt[] bmvals = new FloatToInt[bitmap.Width * bitmap.Height];
@@ -405,14 +381,14 @@ namespace GlitchArtEditor
                     index++;
                 }
             }
-            
+
             return bmvals;
         }
 
         /// <summary>
         /// This method converts the array to an image.
         /// </summary>
-        private BitmapImage convertArraytoImage(FloatToInt[] array)
+        private BitmapImage convertArraytoImage(FloatToInt[] array, Bitmap bitmap)
         {
             int index = 0;
 
@@ -437,109 +413,52 @@ namespace GlitchArtEditor
             return image;
         }
 
-        /// <summary>
-        /// This method applies the echo filter to the image.
-        /// It gets the parameters from the echo filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the echo
-        /// effect applied to it.
-        /// </summary>
-        private void ApplyEcho(string filterKey, EffectParameters parameters)
+        private void applyFilters()
         {
-            Echo echo = new Echo();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey)) 
-            {
-                filterInfo info = new filterInfo("Echo", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            echo.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
+            //Converts image to bitmap
+            Bitmap bitmap = new Bitmap(filename);
+            FloatToInt[] bmvals = convertImagetoArray(bitmap);
 
             //Creates floattoint array for filter output
             FloatToInt[] output = new FloatToInt[bmvals.Length];
 
-            //Calls to apply echo filter
-            echo.ProcessBlock(ref bmvals, ref output, bmvals.Length);
+            // foreach (KeyValuePair<String, filterInfo> entry in filtersList)
+            int filterCount = numFilters + 1;
+            for (int i = 1; i < filterCount; i++)
+            {
+                runFilter(filtersList["Filter" + i].effect, filtersList["Filter" + i].param, ref bmvals, ref output, bmvals.Length);
+                bmvals = output;
+            }
 
-            var image = convertArraytoImage(output);
+            BitmapImage image = convertArraytoImage(bmvals, bitmap);
 
             //Sets filtered image to source image
             imgPhoto.Source = image;
         }
 
-        /// <summary>
-        /// This method applies amplify filter to the image.
-        /// It gets the parameters from amplify filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the
-        /// amplify effect applied to it.
-        /// </summary>
-        private void applyAmplify(string filterKey, EffectParameters parameters)
+        private void runFilter(String filter, EffectParameters param, ref FloatToInt[] input, ref FloatToInt[] output, int length)
         {
-            Amplify amplify = new Amplify();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey)) 
+            switch (filter)
             {
-                filterInfo info = new filterInfo("Amplify", parameters);
-                filtersList.Add(filterKey, info);
+                case "Echo":
+                    Echo echo = new Echo();
+                    echo.SetParameters(ref param);
+                    echo.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Amplify":
+                    Amplify amplify = new Amplify();
+                    amplify.SetParameters(ref param);
+                    amplify.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Bass Boost":
+                    BassBoost BassBoost = new BassBoost();
+                    BassBoost.SetParameters(ref param);
+                    BassBoost.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                default:
+                    Console.WriteLine("Invalid filter");
+                    break;
             }
-
-            amplify.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            amplify.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
-        }
-
-        /// <summary>
-        /// This method applies bass/treble filter to the image.
-        /// It gets the parameters from bass/treble filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the
-        /// bass/treble effect applied to it.
-        /// </summary>
-        private void applyBassBoost(string filterKey, EffectParameters parameters)
-        {
-            BassBoost BassBoost = new BassBoost();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey))
-            {
-                filterInfo info = new filterInfo("Bass Boost", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            BassBoost.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            BassBoost.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
         }
     }
 }
