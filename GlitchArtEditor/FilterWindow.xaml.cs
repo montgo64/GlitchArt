@@ -20,6 +20,7 @@ using Effects;
 using EchoEffect;
 using AmplifyEffect;
 using BassBoostEffect;
+using System.Threading;
 
 namespace GlitchArtEditor
 {
@@ -119,13 +120,15 @@ namespace GlitchArtEditor
                     break;
             }
 
+            MainWindow window = (MainWindow)this.Owner;
+
             if (inputElement == "MenuItem")
             {
-                ((MainWindow)this.Owner).AddFilter(filterType, parameters);
+                Dispatcher.BeginInvoke( new ThreadStart(() => window.AddFilter(filterType, parameters)));
             }
             else
             {
-                ((MainWindow)this.Owner).UpdateFilter(filterType, inputElement, parameters);
+                Dispatcher.BeginInvoke(new ThreadStart(() => window.UpdateFilter(filterType, inputElement, parameters)));
             }
 
             this.Close();
@@ -148,8 +151,7 @@ namespace GlitchArtEditor
         /// </summary>
         private void RemoveFilter(object sender, RoutedEventArgs e)
         {
-            // Use filter name or something else to denote the selected filter
-            ((MainWindow)this.Owner).RemoveFilter(inputElement);
+            Dispatcher.BeginInvoke(new ThreadStart(() => ((MainWindow)this.Owner).RemoveFilter(inputElement)));
 
             this.Close();
         }

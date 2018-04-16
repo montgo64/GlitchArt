@@ -93,16 +93,19 @@ namespace GlitchArtEditor
         /// </summary>
         private void SaveFile(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog save = new SaveFileDialog();
-            save.Title = "Select a File";
-            save.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
-
-            if (save.ShowDialog() == true)
+            if (sourceImage != null)
             {
-                var encoder = new JpegBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)sourceImage.Source));
-                using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
-                    encoder.Save(stream);
+                SaveFileDialog save = new SaveFileDialog();
+                save.Title = "Select a File";
+                save.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
+
+                if (save.ShowDialog() == true)
+                {
+                    var encoder = new JpegBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create((BitmapSource)sourceImage.Source));
+                    using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
+                        encoder.Save(stream);
+                }
             }
         }
 
