@@ -64,7 +64,7 @@ namespace GlitchArtEditor
                     Parameter2.Text = "Decay";
                     value2.Value = ((EchoParameters)parameters).decay;
                     Parameter3.Text = "History Length";
-                    value3.Value = ((EchoParameters)parameters).histLen;
+                    value3.Value = ((EchoParameters)parameters).histLen / 1000;
                     break;
                 case "Amplify":
                     Parameter1.Text = "Amplification (dB)";
@@ -107,7 +107,7 @@ namespace GlitchArtEditor
                 case "Echo":
                     ((EchoParameters)parameters).delay = value1.Value;
                     ((EchoParameters)parameters).decay = (float)value2.Value;
-                    ((EchoParameters)parameters).histLen = Convert.ToInt32(value3.Value);
+                    ((EchoParameters)parameters).histLen = Convert.ToInt32(value3.Value * 1000);
                     break;
                 case "Amplify":
                     ((AmplifyParameters)parameters).mRatio = (float)value1.Value;
