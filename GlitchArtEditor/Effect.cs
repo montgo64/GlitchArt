@@ -20,8 +20,6 @@ namespace Effects
         void SetParameters(ref EffectParameters param);
 
         EffectParameters GetParameters();
-
-
     }
 
 }

@@ -16,6 +16,11 @@ using System.Windows.Shapes;
 using System.IO;
 
 using Microsoft.Win32;
+using Effects;
+using EchoEffect;
+using AmplifyEffect;
+using BassBoostEffect;
+using System.Threading;
 
 namespace GlitchArtEditor
 {
@@ -25,24 +30,67 @@ namespace GlitchArtEditor
     /// </summary>
     public partial class FilterWindow : Window
     {
-        String elementType;
+        private String filterType;
+        private String inputElement;
+        private EffectParameters parameters;
 
         /// <summary>
         /// Initializes filter window. If call comes from
         /// the filter menu, the remove button is unenabled.
         /// </summary>
-        public FilterWindow(String type)
+        public FilterWindow(String filterType, String inputElement, EffectParameters parameters)
         {
             InitializeComponent();
-            elementType = type;
+            this.filterType = filterType;
+            this.inputElement = inputElement;
+            this.parameters = parameters;
 
-            if (elementType == "MenuItem")
+            FilterTitle.Text = filterType;
+
+            if (inputElement == "MenuItem")
             {
                 RemoveButton.IsEnabled = false;
             }
             else
             {
                 RemoveButton.IsEnabled = true;
+            }
+
+            switch (filterType)
+            {
+                case "Echo":
+                    Parameter1.Text = "Delay";
+                    value1.Value = ((EchoParameters)parameters).delay;
+                    Parameter2.Text = "Decay";
+                    value2.Value = ((EchoParameters)parameters).decay;
+                    Parameter3.Text = "History Length";
+                    value3.Value = ((EchoParameters)parameters).histLen / 1000;
+                    break;
+                case "Amplify":
+                    Parameter1.Text = "Amplification (dB)";
+                    value1.Value = ((AmplifyParameters)parameters).mRatio;
+                    Parameter2.Visibility = Visibility.Hidden;
+                    value2.Visibility = Visibility.Hidden;
+                    Parameter3.Visibility = Visibility.Hidden;
+                    value3.Visibility = Visibility.Hidden;
+                    break;
+                case "Bass Boost":
+                    Parameter1.Text = "Bass (dB)";
+                    value1.Value = ((BassBoostParameters)parameters).bass;
+                    Parameter2.Visibility = Visibility.Hidden;
+                    value2.Visibility = Visibility.Hidden;
+                    Parameter3.Visibility = Visibility.Hidden;
+                    value3.Visibility = Visibility.Hidden;
+                    break;
+                default:
+                    // Not a valid Filter
+                    Parameter1.Visibility = Visibility.Hidden;
+                    value1.Visibility = Visibility.Hidden;
+                    Parameter2.Visibility = Visibility.Hidden;
+                    value2.Visibility = Visibility.Hidden;
+                    Parameter3.Visibility = Visibility.Hidden;
+                    value3.Visibility = Visibility.Hidden;
+                    break;
             }
         }
 
@@ -54,11 +102,35 @@ namespace GlitchArtEditor
         /// </summary>
         private void ApplyFilter(object sender, RoutedEventArgs e)
         {
-            if (elementType == "MenuItem")
+            switch (filterType)
             {
-                string filterName = FilterTitle.Text;
-                ((MainWindow)this.Owner).AddFilter(filterName, (double) value1.Value, (float)value2.Value, (int)value3.Value);
+                case "Echo":
+                    ((EchoParameters)parameters).delay = value1.Value;
+                    ((EchoParameters)parameters).decay = (float)value2.Value;
+                    ((EchoParameters)parameters).histLen = Convert.ToInt32(value3.Value * 1000);
+                    break;
+                case "Amplify":
+                    ((AmplifyParameters)parameters).mRatio = (float)value1.Value;
+                    break;
+                case "Bass Boost":
+                    ((BassBoostParameters)parameters).bass = value1.Value;
+                    break;
+                default:
+                    // Not a valid Filter
+                    break;
             }
+
+            MainWindow window = (MainWindow)this.Owner;
+
+            if (inputElement == "MenuItem")
+            {
+                Dispatcher.BeginInvoke( new ThreadStart(() => window.AddFilter(filterType, parameters)));
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(new ThreadStart(() => window.UpdateFilter(filterType, inputElement, parameters)));
+            }
+
             this.Close();
         }
 
@@ -79,10 +151,9 @@ namespace GlitchArtEditor
         /// </summary>
         private void RemoveFilter(object sender, RoutedEventArgs e)
         {
-            // Use filter name or something else to denote the selected filter
-            ((MainWindow)this.Owner).RemoveFilter(elementType);
+            Dispatcher.BeginInvoke(new ThreadStart(() => ((MainWindow)this.Owner).RemoveFilter(inputElement)));
+
             this.Close();
         }
-
     }
 }
