@@ -28,27 +28,26 @@ namespace GlitchArtEditor
 
         public System.Windows.Controls.Image sourceImage;
         private BitmapImage originalImage;
-        private Bitmap bitmap;
         private ScaleTransform scaleTransform;
         private int numFilters;
         private string filename;
-       
+        public Dictionary<String, FilterInfo> filtersList = new Dictionary<String, FilterInfo>();
+
         /// <summary>
         /// Struct for information of the filter.
         /// Contains filter name and parameters.
         /// </summary>
-        public struct filterInfo
+        public struct FilterInfo
         {
             public string effect;
             public EffectParameters param;
 
-            public filterInfo(string eff, EffectParameters par)
-            {   
+            public FilterInfo(string eff, EffectParameters par)
+            {
                 effect = eff;
                 param = par;
             }
         }
-        public Dictionary<String, filterInfo> filtersList = new Dictionary<String, filterInfo>();
 
         /// <summary>
         /// Initializes main GUI window
@@ -85,7 +84,6 @@ namespace GlitchArtEditor
 
                 StatusText.Content = "Select a filter to apply to image. ";
                 SetZoom();
-                bitmap = new Bitmap(filename);
             }
         }
 
@@ -95,16 +93,19 @@ namespace GlitchArtEditor
         /// </summary>
         private void SaveFile(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog save = new SaveFileDialog();
-            save.Title = "Select a File";
-            save.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
-
-            if (save.ShowDialog() == true)
+            if (sourceImage != null)
             {
-                var encoder = new JpegBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)sourceImage.Source));
-                using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
-                    encoder.Save(stream);
+                SaveFileDialog save = new SaveFileDialog();
+                save.Title = "Select a File";
+                save.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
+
+                if (save.ShowDialog() == true)
+                {
+                    var encoder = new JpegBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create((BitmapSource)sourceImage.Source));
+                    using (FileStream stream = new FileStream(save.FileName, FileMode.Create))
+                        encoder.Save(stream);
+                }
             }
         }
 
@@ -116,7 +117,6 @@ namespace GlitchArtEditor
         {
             this.Close();
         }
-
 
         /// <summary>
         /// This method sets the default zoom amount for the newly opened
@@ -141,8 +141,11 @@ namespace GlitchArtEditor
                 double wRatio = Math.Round(ImageScroll.ActualWidth / imgPhoto.Width, 2) - 0.03;
                 double hRatio = Math.Round(ImageScroll.ActualHeight / imgPhoto.Height, 2) - 0.03;
 
-                ZoomSlider.Value = wRatio < hRatio ? wRatio : hRatio;
-                ZoomTxt.Text = ZoomSlider.Value * 100 + "%";
+                if (wRatio < 1 || hRatio < 1)
+                {
+                    ZoomSlider.Value = wRatio < hRatio ? wRatio : hRatio;
+                    ZoomTxt.Text = ZoomSlider.Value * 100 + "%";
+                }
             }
         }
 
@@ -192,26 +195,34 @@ namespace GlitchArtEditor
         /// </summary>
         private void FilterSelect(object sender, RoutedEventArgs e)
         {
-            String filterType = "";
-            String elementType = "";
+            if (sourceImage != null)
+            {
+                String filterType = "";
+                String elementType = "";
 
-            if (sender.GetType() == typeof(MenuItem))
-            {
-                if (numFilters + 1 > MAX_FILTERS)
+                if (sender.GetType() == typeof(MenuItem))
                 {
-                    MessageBox.Show("Already have maximum number of filters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    if (numFilters + 1 > MAX_FILTERS)
+                    {
+                        MessageBox.Show("Already have maximum number of filters.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    filterType = ((MenuItem)sender).Header.ToString();
+                    elementType = "MenuItem";
                 }
-                
-                filterType = ((MenuItem)sender).Header.ToString();
-                elementType = "MenuItem";
+                else if (sender.GetType() == typeof(Button))
+                {
+                    filterType = ((Button)sender).Content.ToString();
+                    elementType = ((Button)sender).Name.ToString();
+                }
+
+                OpenFilterWindow(filterType, elementType);
             }
-            else if (sender.GetType() == typeof(Button))
+            else
             {
-                filterType = ((Button)sender).Content.ToString();
-                elementType = ((Button)sender).Name.ToString(); ;
+                MessageBox.Show("Must have an image opened.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            OpenFilterWindow(filterType, elementType);
         }
 
         /// <summary>
@@ -222,47 +233,35 @@ namespace GlitchArtEditor
         /// the filters menu or when a user selects an already applied filter
         /// in the filter queue.
         /// </summary>
-        private void OpenFilterWindow(String type, String elementType)
+        private void OpenFilterWindow(String filterType, String inputElement)
         {
-            FilterWindow winFilter = new FilterWindow(elementType);
+            EffectParameters parameters;
+
+            if(inputElement.Equals("MenuItem"))
+            {
+                switch (filterType)
+                {
+                    case "Echo":
+                        parameters = new EchoParameters();
+                        break;
+                    case "Amplify":
+                        parameters = new AmplifyParameters();
+                        break;
+                    case "Bass Boost":
+                        parameters = new BassBoostParameters();
+                        break;
+                    default:
+                        StatusText.Content = filterType + " is an invalid filter. ";
+                        return;
+                }
+            }
+            else
+            {
+                parameters = filtersList[inputElement].param;
+            }
+
+            FilterWindow winFilter = new FilterWindow(filterType, inputElement, parameters);
             winFilter.Owner = this;
-
-            // Will need to expand this to a new function, for each filter
-            // Currently only applies to Echo filter
-            winFilter.FilterTitle.Text = type;
-            if (type.Equals("Echo"))
-            {
-                winFilter.Parameter1.Text = "Delay";
-                winFilter.value1.Value = 1;
-
-                winFilter.Parameter2.Text = "Decay";
-                winFilter.value2.Value = 0.5;
-
-                winFilter.Parameter3.Text = "History Length";
-                winFilter.value3.Value = 10;
-            }
-
-            if (type.Equals("Amplify"))
-            {
-                winFilter.Parameter1.Text = "Amplification (dB)";
-                winFilter.value1.Value = 3.0;
-
-                winFilter.Parameter2.Visibility = Visibility.Hidden;
-                winFilter.value2.Visibility = Visibility.Hidden;
-                winFilter.Parameter3.Visibility = Visibility.Hidden;
-                winFilter.value3.Visibility = Visibility.Hidden;
-            }
-
-            if (type.Equals("Bass Boost"))
-            {
-                winFilter.Parameter1.Text = "Bass (dB)";
-                winFilter.value1.Value = 50.0;
-
-                winFilter.Parameter2.Visibility = Visibility.Hidden;
-                winFilter.value2.Visibility = Visibility.Hidden;
-                winFilter.Parameter3.Visibility = Visibility.Hidden;
-                winFilter.value3.Visibility = Visibility.Hidden;
-            }
             winFilter.Show();
         }
 
@@ -273,7 +272,7 @@ namespace GlitchArtEditor
         /// parameters and makes the call to apply the filter to the
         /// image.
         /// </summary>
-        public void AddFilter(String filterType, double param1, float param2, int param3)
+        public void AddFilter(String filterType, EffectParameters parameters)
         {
             numFilters++;
 
@@ -281,47 +280,23 @@ namespace GlitchArtEditor
             filter.Content = filterType;
             filter.Visibility = Visibility.Visible;
 
-            //Currently only applies to Echo filter
-            if (filterType.Equals("Echo"))
-            {
-                EffectParameters parameters = new EchoParameters(param1, param2, param3*1000);
-                ApplyEcho("Filter" + numFilters, parameters);
-            }
+            FilterInfo info = new FilterInfo(filterType, parameters);
+            filtersList.Add("Filter" + numFilters, info);
 
-            if (filterType.Equals("Amplify"))
-            {
-                EffectParameters parameters = new AmplifyParameters((float) param1);
-                applyAmplify("Filter" + numFilters, parameters);
-            }
-
-            if (filterType.Equals("Bass Boost"))
-            {
-                EffectParameters parameters = new BassBoostParameters(param1);
-                applyBassBoost("Filter" + numFilters, parameters);
-            }
+            ApplyFilters(filterType);
         }
 
         /// <summary>
-        /// This method adds the filters to the image. This method is
-        /// called when the filter queue is reset by a filter being
-        /// removed. This applies the other filters back to the image.
+        /// This method updates the selected filter. This
+        /// method is called once the user has hit the filter
+        /// button in the filter queue on the MainWindow.
         /// </summary>
-        public void AddFilter(String filterType, EffectParameters param)
+        public void UpdateFilter(String filterType, String inputElement, EffectParameters parameters)
         {
-            if (filterType.Equals("Echo"))
-            {
-                ApplyEcho("Filter" + numFilters, param);
-            }
-            if (filterType.Equals("Amplify"))
-            {
-                applyAmplify("Filter" + numFilters, param);
-            }
-            if (filterType.Equals("Bass Boost"))
-            {
-                applyBassBoost("Filter" + numFilters, param);
-            }
+            FilterInfo info = new FilterInfo(filterType, parameters);
+            filtersList[inputElement] = info;
 
-            StatusText.Content = "Applied the " + filterType + " filter. ";
+            ApplyFilters(filterType);
         }
 
         /// <summary>
@@ -370,26 +345,85 @@ namespace GlitchArtEditor
                         filter.Content = nextFilter.Content;
 
                         //Reapplies filter to image and stores filter info in new place number
-                        filterInfo info = new filterInfo(filtersList["Filter" + nextPlacement].effect, filtersList["Filter" + nextPlacement].param);
-                        AddFilter(info.effect, info.param);
+                        FilterInfo info = new FilterInfo(filtersList["Filter" + nextPlacement].effect, filtersList["Filter" + nextPlacement].param);
+                        filtersList.Add("Filter" + i, info);
                         filtersList.Remove("Filter" + nextPlacement);
 
                         filter.Visibility = Visibility.Visible;
                         nextFilter.Visibility = Visibility.Hidden;
                     }
-
-                    else
-                    {
-                        AddFilter(filtersList["Filter" + i].effect, filtersList["Filter" + i].param);
-                    }
                 }
+
+                ApplyFilters("");
+            }
+
+            StatusText.Content = "Removed the filter. ";
+        }
+
+        /// <summary>
+        /// Applies the filters to an image in the order the list.
+        /// </summary>
+        private void ApplyFilters(String filterType)
+        {
+            //Converts image to bitmap
+            Bitmap bitmap = new Bitmap(filename);
+            FloatToInt[] bmvals = ConvertImagetoArray(bitmap);
+
+            //Creates floattoint array for filter output
+            FloatToInt[] output = new FloatToInt[bmvals.Length];
+
+            // foreach (KeyValuePair<String, filterInfo> entry in filtersList)
+            int filterCount = numFilters + 1;
+            for (int i = 1; i < filterCount; i++)
+            {
+                RunFilter(filtersList["Filter" + i].effect, filtersList["Filter" + i].param, ref bmvals, ref output, bmvals.Length);
+                bmvals = output;
+            }
+
+            BitmapImage image = ConvertArraytoImage(bmvals, bitmap);
+
+            //Sets filtered image to source image
+            imgPhoto.Source = image;
+
+            if (!filterType.Equals(""))
+            {
+                StatusText.Content = "Applied the " + filterType + " filter. ";
+            }
+        }
+
+        /// <summary>
+        /// Runs the filter on the image using the specific filter 
+        /// type's ProcessBlock method.
+        /// </summary>
+        private void RunFilter(String filter, EffectParameters param, ref FloatToInt[] input, ref FloatToInt[] output, int length)
+        {
+            switch (filter)
+            {
+                case "Echo":
+                    Echo echo = new Echo();
+                    echo.SetParameters(ref param);
+                    echo.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Amplify":
+                    Amplify amplify = new Amplify();
+                    amplify.SetParameters(ref param);
+                    amplify.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Bass Boost":
+                    BassBoost BassBoost = new BassBoost();
+                    BassBoost.SetParameters(ref param);
+                    BassBoost.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                default:
+                    StatusText.Content = "Invalid filter";
+                    break;
             }
         }
 
         /// <summary>
         /// This method converts the image to an array.
         /// </summary>
-        private FloatToInt[] convertImagetoArray()
+        private FloatToInt[] ConvertImagetoArray(Bitmap bitmap)
         {
             //Creates floattoint array with image size
             FloatToInt[] bmvals = new FloatToInt[bitmap.Width * bitmap.Height];
@@ -405,14 +439,14 @@ namespace GlitchArtEditor
                     index++;
                 }
             }
-            
+
             return bmvals;
         }
 
         /// <summary>
         /// This method converts the array to an image.
         /// </summary>
-        private BitmapImage convertArraytoImage(FloatToInt[] array)
+        private BitmapImage ConvertArraytoImage(FloatToInt[] array, Bitmap bitmap)
         {
             int index = 0;
 
@@ -435,111 +469,6 @@ namespace GlitchArtEditor
             image.EndInit();
 
             return image;
-        }
-
-        /// <summary>
-        /// This method applies the echo filter to the image.
-        /// It gets the parameters from the echo filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the echo
-        /// effect applied to it.
-        /// </summary>
-        private void ApplyEcho(string filterKey, EffectParameters parameters)
-        {
-            Echo echo = new Echo();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey)) 
-            {
-                filterInfo info = new filterInfo("Echo", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            echo.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            echo.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
-        }
-
-        /// <summary>
-        /// This method applies amplify filter to the image.
-        /// It gets the parameters from amplify filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the
-        /// amplify effect applied to it.
-        /// </summary>
-        private void applyAmplify(string filterKey, EffectParameters parameters)
-        {
-            Amplify amplify = new Amplify();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey)) 
-            {
-                filterInfo info = new filterInfo("Amplify", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            amplify.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            amplify.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
-        }
-
-        /// <summary>
-        /// This method applies bass/treble filter to the image.
-        /// It gets the parameters from bass/treble filter window
-        /// set by the user. This method is called once a user
-        /// hits apply in the filter window. When this method
-        /// is complete, the output image will now have the
-        /// bass/treble effect applied to it.
-        /// </summary>
-        private void applyBassBoost(string filterKey, EffectParameters parameters)
-        {
-            BassBoost BassBoost = new BassBoost();
-
-            //Adds filter and corresponding parameters to the filter list
-            if (!filtersList.ContainsKey(filterKey))
-            {
-                filterInfo info = new filterInfo("Bass Boost", parameters);
-                filtersList.Add(filterKey, info);
-            }
-
-            BassBoost.SetParameters(ref parameters);
-
-            FloatToInt[] bmvals = convertImagetoArray();
-
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            //Calls to apply echo filter
-            BassBoost.ProcessBlock(ref bmvals, ref output, bmvals.Length);
-
-            var image = convertArraytoImage(output);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
         }
     }
 }

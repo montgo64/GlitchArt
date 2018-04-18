@@ -21,4 +21,5 @@ namespace Effects
 
         EffectParameters GetParameters();
     }
+
 }
