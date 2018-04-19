@@ -55,10 +55,10 @@ namespace PhaserEffect
             mStages = 0;
             mDryWet = 0;
             mFreq = 0;
-            mPhase = 10;
-            mDepth = 10;
-            mFeedback = 10;
-            mOutGain = 10;
+            mPhase = 0;
+            mDepth = 0;
+            mFeedback = 0;
+            mOutGain = 0;
         }
 
         public Phaser(PhaserParams param)
