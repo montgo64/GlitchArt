@@ -20,6 +20,8 @@ using Effects;
 using EchoEffect;
 using AmplifyEffect;
 using BassBoostEffect;
+using PhaserEffect;
+using FadeEffect;
 using System.Threading;
 
 namespace GlitchArtEditor
@@ -82,6 +84,22 @@ namespace GlitchArtEditor
                     Parameter3.Visibility = Visibility.Hidden;
                     value3.Visibility = Visibility.Hidden;
                     break;
+                case "Phaser":
+                    Parameter1.Text = "Stages";
+                    value1.Value = ((PhaserParams)parameters).stages;
+                    Parameter2.Text = "Dry Wet";
+                    value2.Value = ((PhaserParams)parameters).dryWet;
+                    Parameter3.Text = "Frequency";
+                    value3.Value = ((PhaserParams)parameters).freq;
+                    break;
+                case "Fade":
+                    Parameter1.Text = "Fade In";
+                    value1.Value = ((FadeParameters)parameters).mFadeIn;
+                    Parameter2.Text = "Fade out";
+                    value2.Value = ((FadeParameters)parameters).mFadeOut;
+                    Parameter3.Text = "Sample Count";
+                    value3.Value = ((FadeParameters)parameters).mSampleCnt;
+                    break;
                 default:
                     // Not a valid Filter
                     Parameter1.Visibility = Visibility.Hidden;
@@ -114,6 +132,16 @@ namespace GlitchArtEditor
                     break;
                 case "Bass Boost":
                     ((BassBoostParameters)parameters).bass = value1.Value;
+                    break;
+                case "Phaser":
+                    ((PhaserParams)parameters).stages = (int)value1.Value;
+                    ((PhaserParams)parameters).dryWet = (int)value2.Value;
+                    ((PhaserParams)parameters).freq = value3.Value;
+                    break;
+                case "Fade":
+                    ((FadeParameters)parameters).mFadeIn = (int)value1.Value;
+                    ((FadeParameters)parameters).mFadeOut = (int)value2.Value;
+                    ((FadeParameters)parameters).mSampleCnt = (int)value3.Value;
                     break;
                 default:
                     // Not a valid Filter
