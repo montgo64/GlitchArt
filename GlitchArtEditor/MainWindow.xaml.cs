@@ -9,6 +9,8 @@ using Effects;
 using EchoEffect;
 using AmplifyEffect;
 using BassBoostEffect;
+using PhaserEffect;
+using FadeEffect;
 using System.IO;
 
 using Microsoft.Win32;
@@ -71,6 +73,15 @@ namespace GlitchArtEditor
             op.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
             if (op.ShowDialog() == true)
             {
+                int oldFilterNum = numFilters;
+                for (int i = 1; i <= oldFilterNum; i++)
+                {
+                    String currentFilter = "Filter1";
+                    RemoveFilter(currentFilter);
+                }
+
+                numFilters = 0;
+
                 BitmapImage bit = new BitmapImage(new Uri(op.FileName));
 
                 imgPhoto.Source = bit;
@@ -250,6 +261,12 @@ namespace GlitchArtEditor
                     case "Bass Boost":
                         parameters = new BassBoostParameters();
                         break;
+                    case "Phaser":
+                        parameters = new PhaserParams();
+                        break;
+                    case "Fade":
+                        parameters = new FadeParameters();
+                        break;
                     default:
                         StatusText.Content = filterType + " is an invalid filter. ";
                         return;
@@ -413,6 +430,16 @@ namespace GlitchArtEditor
                     BassBoost BassBoost = new BassBoost();
                     BassBoost.SetParameters(ref param);
                     BassBoost.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Phaser":
+                    Phaser Phaser = new Phaser();
+                    Phaser.SetParameters(ref param);
+                    Phaser.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Fade":
+                    Fade Fade = new Fade();
+                    Fade.SetParameters(ref param);
+                    Fade.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 default:
                     StatusText.Content = "Invalid filter";

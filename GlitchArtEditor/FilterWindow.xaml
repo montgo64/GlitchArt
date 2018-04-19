@@ -19,21 +19,21 @@
         <DockPanel Grid.Column="0" Margin="0,87,0,325">
             <TextBox Text="{Binding ElementName=value1, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
                      Margin="0,0,14,0" Height="20" />
-            <Slider Maximum="100"  TickFrequency="1"  IsSnapToTickEnabled="True" Name="value1" Width="398" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value1" Width="398" Height="20" />
         </DockPanel>
 
         <TextBlock Text="Parameter 2" Name="Parameter2" Margin="12,120,0,292" FontSize="20"/>
         <DockPanel Grid.Column="0" Margin="0,153,0,257">
             <TextBox Text="{Binding ElementName=value2, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
                      Margin="0,0,14,0" Height="20" />
-            <Slider Maximum="100"  TickFrequency="1"  IsSnapToTickEnabled="True" Name="value2" Width="398" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value2" Width="398" Height="20" />
         </DockPanel>
 
         <TextBlock Text="Parameter 3" Name="Parameter3" Margin="12,188,0,225" FontSize="20"/>
         <DockPanel Grid.Column="0" Margin="0,220,0,193">
             <TextBox Text="{Binding ElementName=value3, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
                      Margin="0,0,14,0" Height="20" />
-            <Slider Maximum="100"  TickFrequency="1"  IsSnapToTickEnabled="True" Name="value3" Width="398" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value3" Width="398" Height="20" />
         </DockPanel>
 
         <Button Name="ApplyButton" Height="40" Content="Apply" Margin="10,140,340,0" Click="ApplyFilter" FontSize="20"/>
