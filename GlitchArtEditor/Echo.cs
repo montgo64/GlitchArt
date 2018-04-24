@@ -36,7 +36,7 @@ namespace EchoEffect
             Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
             parameters.Add("Delay", new Parameter { name = "Delay", value = delay, minValue = 1, maxValue = 100, frequency = 1 });
             parameters.Add("Decay", new Parameter { name = "Decay", value = decay, minValue = 0, maxValue = 100, frequency = 1 });
-            parameters.Add("History Length", new Parameter { name = "History Length", value = histLen, minValue = 1, maxValue = 100, frequency = 1 });
+            parameters.Add("History Length", new Parameter { name = "History Length", value = histLen, minValue = 1000, maxValue = 100000, frequency = 1000 });
 
             SetParams(parameters);
         }

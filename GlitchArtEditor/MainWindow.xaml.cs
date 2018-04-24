@@ -382,30 +382,43 @@ namespace GlitchArtEditor
         /// </summary>
         private void ApplyFilters(String filterType)
         {
-            //Converts image to bitmap
-            Bitmap bitmap = new Bitmap(filename);
-            FloatToInt[] bmvals = ConvertImagetoArray(bitmap);
+            // Create temporary filename and current image to its original
+            String temp = filename + "_temp";
+            imgPhoto.Source = originalImage;
 
-            //Creates floattoint array for filter output
-            FloatToInt[] output = new FloatToInt[bmvals.Length];
-
-            // foreach (KeyValuePair<String, filterInfo> entry in filtersList)
             int filterCount = numFilters + 1;
             for (int i = 1; i < filterCount; i++)
             {
+                // Save temporary file that function can keep referring to
+                var encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create((BitmapSource)imgPhoto.Source));
+                FileStream stream = new FileStream(temp, FileMode.Create);
+                encoder.Save(stream);
+                stream.Close();
+
+                //Converts image to bitmap
+                Bitmap bitmap = new Bitmap(temp);
+                FloatToInt[] bmvals = ConvertImagetoArray(bitmap);
+
+                //Creates floattoint array for filter output
+                FloatToInt[] output = new FloatToInt[bmvals.Length];
+
                 RunFilter(filtersList["Filter" + i].effect, filtersList["Filter" + i].param, ref bmvals, ref output, bmvals.Length);
                 bmvals = output;
+
+                BitmapImage image = ConvertArraytoImage(bmvals, bitmap);
+                bitmap.Dispose();
+
+                //Sets filtered image to source image
+                imgPhoto.Source = image;
+
+                if (!filterType.Equals(""))
+                {
+                    StatusText.Content = "Applied the " + filterType + " filter. ";
+                }
             }
 
-            BitmapImage image = ConvertArraytoImage(bmvals, bitmap);
-
-            //Sets filtered image to source image
-            imgPhoto.Source = image;
-
-            if (!filterType.Equals(""))
-            {
-                StatusText.Content = "Applied the " + filterType + " filter. ";
-            }
+            File.Delete(temp);
         }
 
         /// <summary>
