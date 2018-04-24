@@ -1,4 +1,6 @@
 ﻿using Effects;
+using System;
+using System.Collections.Generic;
 
 namespace PhaserEffect
 {
@@ -15,16 +17,34 @@ namespace PhaserEffect
         public int laststages;
     }
 
-    class PhaserParams : EffectParameters
+    class PhaserParameters : EffectParameters
     {
-        public int stages;
-        public int dryWet;
-        public double freq;
-        public double phase;
-        public int depth;
-        public int feedback;
-        public double outgain;
-        public float samplerate;
+        /// <summary>
+        /// Default constructor. Sets stages to 1, dryWet to 1,
+        /// and freq to 1.
+        /// </summary>
+        public PhaserParameters()
+        {
+            Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
+            parameters.Add("Stages", new Parameter { name = "Stages", value = 0, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Dry Wet", new Parameter { name = "Dry Wet", value = 0, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Frequency", new Parameter { name = "Frequency", value = 1, minValue = 1, maxValue = 100, frequency = 1 });
+
+            SetParams(parameters);
+        }
+
+        /// <summary>
+        /// Constructor. Sets parameters for stages, dryWet, and freq.
+        /// </summary>
+        public PhaserParameters(int stages, int dryWet, double freq)
+        {
+            Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
+            parameters.Add("Stages", new Parameter { name = "Stages", value = stages, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Dry Wet", new Parameter { name = "Dry Wet", value = dryWet, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Frequency", new Parameter { name = "Frequency", value = freq, minValue = 1, maxValue = 100, frequency = 1 });
+
+            SetParams(parameters);
+        }
     }
 
     class Phaser : Effect
@@ -61,9 +81,9 @@ namespace PhaserEffect
             mOutGain = 0;
         }
 
-        public Phaser(PhaserParams param)
+        public Phaser(PhaserParameters phaser)
         {
-            state.samplerate = param.samplerate;
+            state.samplerate = 0;
             state.old = new double[num_stages];
             state.skipcount = 0;
             state.gain = 0;
@@ -71,30 +91,26 @@ namespace PhaserEffect
             state.laststages = 0;
             state.outgain = 0;
 
-            mStages = param.stages;
-            mDryWet = param.dryWet;
-            mFreq = param.freq;
-            mPhase = param.phase;
-            mDepth = param.depth;
-            mFeedback = param.feedback;
-            mOutGain = param.outgain;
-        }
+            mPhase = 0;
+            mDepth = 0;
+            mFeedback = 0;
+            mOutGain = 0;
 
-
-        public EffectParameters GetParameters()
-        {
-            PhaserParams param = new PhaserParams();
-
-            param.samplerate = state.samplerate;
-            param.stages = mStages;
-            param.dryWet = mDryWet;
-            param.freq = mFreq;
-            param.depth = mDepth;
-            param.phase = mPhase;
-            param.feedback = mFeedback;
-            param.outgain = mOutGain;
-
-            return (EffectParameters)param;
+            foreach (Parameter parameter in phaser.GetParams().Values)
+            {
+                if (parameter.name.Equals("Fade In"))
+                {
+                    mStages = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("Fade Out"))
+                {
+                    mDryWet = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("Sample Count"))
+                {
+                    mFreq = parameter.value;
+                }
+            }
         }
 
         public void ProcessBlock(ref FloatToInt[] input, ref FloatToInt[] output, int length)
@@ -131,26 +147,6 @@ namespace PhaserEffect
                 output[i].FloatVal = (float)(state.outgain * (m * mDryWet + inv * (255 - mDryWet)) / 255);
 
             }
-        }
-
-        public void SetParameters(ref EffectParameters p)
-        {
-            PhaserParams param = (PhaserParams)p;
-            state.samplerate = param.samplerate;
-            state.old = new double[num_stages];
-            state.skipcount = 0;
-            state.gain = 0;
-            state.fbout = 0;
-            state.laststages = 0;
-            state.outgain = 0;
-
-            mStages = param.stages;
-            mDryWet = param.dryWet;
-            mFreq = param.freq;
-            mPhase = param.phase;
-            mDepth = param.depth;
-            mFeedback = param.feedback;
-            mOutGain = param.outgain;
         }
 
         double expm1(double input)

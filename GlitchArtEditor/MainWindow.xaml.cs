@@ -262,7 +262,7 @@ namespace GlitchArtEditor
                         parameters = new BassBoostParameters();
                         break;
                     case "Phaser":
-                        parameters = new PhaserParams();
+                        parameters = new PhaserParameters();
                         break;
                     case "Fade":
                         parameters = new FadeParameters();
@@ -417,28 +417,23 @@ namespace GlitchArtEditor
             switch (filter)
             {
                 case "Echo":
-                    Echo echo = new Echo();
-                    echo.SetParameters(ref param);
+                    Echo echo = new Echo((EchoParameters)param);
                     echo.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 case "Amplify":
-                    Amplify amplify = new Amplify();
-                    amplify.SetParameters(ref param);
+                    Amplify amplify = new Amplify((AmplifyParameters)param);
                     amplify.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 case "Bass Boost":
-                    BassBoost BassBoost = new BassBoost();
-                    BassBoost.SetParameters(ref param);
+                    BassBoost BassBoost = new BassBoost((BassBoostParameters)param);
                     BassBoost.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 case "Phaser":
-                    Phaser Phaser = new Phaser();
-                    Phaser.SetParameters(ref param);
+                    Phaser Phaser = new Phaser((PhaserParameters)param);
                     Phaser.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 case "Fade":
-                    Fade Fade = new Fade();
-                    Fade.SetParameters(ref param);
+                    Fade Fade = new Fade((FadeParameters)param);
                     Fade.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 default:

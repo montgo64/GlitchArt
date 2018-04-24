@@ -1,4 +1,6 @@
 using Effects;
+using System;
+using System.Collections.Generic;
 
 namespace EchoEffect
 {
@@ -17,20 +19,26 @@ namespace EchoEffect
         /// </summary>
         public EchoParameters()
         {
-            delay = 1.0;
-            decay = 0.5f;
-            histLen = 10;
+            Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
+            parameters.Add("Delay", new Parameter { name = "Delay", value = 1, minValue = 1, maxValue = 100, frequency = 1 });
+            parameters.Add("Decay", new Parameter { name = "Decay", value = 0.5, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("History Length", new Parameter { name = "History Length", value = 10000, minValue = 1000, maxValue = 100000, frequency = 1000 });
+
+            SetParams(parameters);
         }
 
         /// <summary>
-        /// Constructor. Sets parameters to delay, decay,
+        /// Constructor. Sets parameters for delay, decay,
         /// and history length.
         /// </summary>
-        public EchoParameters(double del, float dec, int hl)
+        public EchoParameters(double delay, float decay, int histLen)
         {
-            delay = del;
-            decay = dec;
-            histLen = hl;
+            Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
+            parameters.Add("Delay", new Parameter { name = "Delay", value = delay, minValue = 1, maxValue = 100, frequency = 1 });
+            parameters.Add("Decay", new Parameter { name = "Decay", value = decay, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("History Length", new Parameter { name = "History Length", value = histLen, minValue = 1, maxValue = 100, frequency = 1 });
+
+            SetParams(parameters);
         }
     }
 
@@ -61,14 +69,25 @@ namespace EchoEffect
         /// <summary>
         /// Constructor. Stores parameter into variables.
         /// </summary>
-        public Echo(ref EchoParameters ep)
+        public Echo(EchoParameters ep)
         {
-            delay = ep.delay;
-            decay = ep.decay;
-            histPos = 0;
-            histLen = ep.histLen;
-            history = new float[ep.histLen];
-
+            foreach (Parameter parameter in ep.GetParams().Values)
+            {
+                if (parameter.name.Equals("Delay"))
+                {
+                    delay = parameter.value;
+                }
+                else if (parameter.name.Equals("Decay"))
+                {
+                    decay = (float)parameter.value;
+                }
+                else if (parameter.name.Equals("History Length"))
+                {
+                    histPos = 0;
+                    histLen = (int)parameter.value;
+                    history = new float[histLen];
+                }
+            }
         }
 
         /// <summary>
@@ -88,29 +107,6 @@ namespace EchoEffect
                 history[histPos] = input[i].FloatVal + (history[histPos] * decay);
                 output[i].FloatVal = history[histPos];
             }
-        }
-
-        /// <summary>
-        /// Sets the parameters for echo effect
-        /// </summary>
-        public void SetParameters(ref EffectParameters param)
-        {
-            EchoParameters ep = (EchoParameters)param;
-
-            delay = ep.delay;
-            decay = ep.decay;
-            histPos = 0;
-            histLen = ep.histLen;
-            history = new float[ep.histLen];
-        }
-
-        /// <summary>
-        /// Returns the parameters for echo effect
-        /// </summary>
-        public EffectParameters GetParameters()
-        {
-            return (EffectParameters)new EchoParameters(delay, decay, histLen);
-
         }
     }
 }
