@@ -1,5 +1,6 @@
 ﻿using Effects;
 using System;
+using System.Collections.Generic;
 
 namespace BassBoostEffect
 {
@@ -8,22 +9,22 @@ namespace BassBoostEffect
     /// </summary>
     public class BassBoostParameters : EffectParameters
     {
-        public double bass;
-
         /// <summary>
         /// Default constructor. Sets bass to 5.0.
         /// </summary>
         public BassBoostParameters()
         {
-            bass = 5.0;
+            SetParams(new Dictionary<string, Parameter>() { { "Bass (dB)",
+                    new Parameter { name = "Bass (dB)", value = 0, minValue = -100, maxValue = 100, frequency = 2 } } });
         }
 
         /// <summary>
-        /// Constructor. Sets parameter to bass.
+        /// Constructor. Sets parameter for bass.
         /// </summary>
-        public BassBoostParameters(double bas)
+        public BassBoostParameters(double bass)
         {
-            bass = bas;
+            SetParams(new Dictionary<string, Parameter>() { { "Bass (dB)",
+                    new Parameter { name = "Bass (dB)", value = bass, minValue = -100, maxValue = 100, frequency = 2 } } });
         }
     }
 
@@ -46,9 +47,15 @@ namespace BassBoostEffect
         /// <summary>
         /// Constructor. Stores parameter into bass.
         /// </summary>
-        public BassBoost(ref BassBoostParameters btp)
+        public BassBoost(BassBoostParameters btp)
         {
-            bass = btp.bass;
+            foreach (Parameter parameter in btp.GetParams().Values)
+            {
+                if (parameter.name.Equals("Bass (dB)"))
+                {
+                    bass = parameter.value;
+                }
+            }
         }
 
         /// <summary>
@@ -65,27 +72,7 @@ namespace BassBoostEffect
                 double gain1 = 1.0 / (bass + 1.0);
                 cap = (input[i].FloatVal + cap*bass) *gain1;
                 output[i].FloatVal = (float) cap;
-
             }
-        }
-
-        /// <summary>
-        /// Sets the parameters for BassBoost effect
-        /// </summary>
-        public void SetParameters(ref EffectParameters param)
-        {
-            BassBoostParameters btp = (BassBoostParameters)param;
-
-            bass = btp.bass;
-        }
-
-        /// <summary>
-        /// Returns the parameters for BassBoost effect
-        /// </summary>
-        public EffectParameters GetParameters()
-        {
-            return (EffectParameters)new BassBoostParameters(bass);
-
         }
     }
 }

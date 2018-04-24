@@ -1,4 +1,6 @@
 ﻿using Effects;
+using System;
+using System.Collections.Generic;
 
 namespace AmplifyEffect
 {
@@ -7,22 +9,22 @@ namespace AmplifyEffect
     /// </summary>
     public class AmplifyParameters : EffectParameters
     {
-        public float mRatio;
-
         /// <summary>
         /// Default constructor. Sets mRatio to 3.0.
         /// </summary>
         public AmplifyParameters()
         {
-            mRatio = 3.0f;
+            SetParams(new Dictionary<string, Parameter>() { { "Amplification (dB)",
+                    new Parameter { name = "Amplification (dB)", value = 0, minValue = -100, maxValue = 100, frequency = 2 } } });
         }
 
         /// <summary>
-        /// Constructor. Sets parameter to mRatio.
+        /// Constructor. Sets parameter for mRatio.
         /// </summary>
-        public AmplifyParameters(float rat)
+        public AmplifyParameters(float mRatio)
         {
-            mRatio = rat;
+            SetParams(new Dictionary<string, Parameter>() { { "Amplification (dB)",
+                    new Parameter { name = "Amplification (dB)", value = mRatio, minValue = -100, maxValue = 100, frequency = 2 } } });
         }
     }
 
@@ -44,9 +46,15 @@ namespace AmplifyEffect
         /// <summary>
         /// Constructor. Stores parameter into variables.
         /// </summary>
-        public Amplify(ref AmplifyParameters ap)
+        public Amplify(AmplifyParameters ap)
         {
-            mRatio = ap.mRatio;
+            foreach (Parameter parameter in ap.GetParams().Values)
+            {
+                if (parameter.name.Equals("Amplification (dB)"))
+                {
+                    mRatio = (float)parameter.value;
+                }
+            }
         }
 
         /// <summary>
@@ -61,25 +69,6 @@ namespace AmplifyEffect
             {
                 output[i].FloatVal = (input[i].FloatVal * mRatio);
             }
-        }
-
-        /// <summary>
-        /// Sets the parameters for Amplify effect
-        /// </summary>
-        public void SetParameters(ref EffectParameters param)
-        {
-            AmplifyParameters ap = (AmplifyParameters)param;
-
-            mRatio = ap.mRatio;
-        }
-
-        /// <summary>
-        /// Returns the parameters for Amplify effect
-        /// </summary>
-        public EffectParameters GetParameters()
-        {
-            return (EffectParameters)new AmplifyParameters(mRatio);
-
         }
     }
 }

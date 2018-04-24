@@ -58,57 +58,31 @@ namespace GlitchArtEditor
                 RemoveButton.IsEnabled = true;
             }
 
-            switch (filterType)
+            Parameter1.Visibility = Visibility.Hidden;
+            value1.Visibility = Visibility.Hidden;
+            Parameter2.Visibility = Visibility.Hidden;
+            value2.Visibility = Visibility.Hidden;
+            Parameter3.Visibility = Visibility.Hidden;
+            value3.Visibility = Visibility.Hidden;
+
+            int count = 1;
+            TextBlock text;
+            Slider slide;
+
+            foreach (Parameter parameter in parameters.GetParams().Values)
             {
-                case "Echo":
-                    Parameter1.Text = "Delay";
-                    value1.Value = ((EchoParameters)parameters).delay;
-                    Parameter2.Text = "Decay";
-                    value2.Value = ((EchoParameters)parameters).decay;
-                    Parameter3.Text = "History Length";
-                    value3.Value = ((EchoParameters)parameters).histLen / 1000;
-                    break;
-                case "Amplify":
-                    Parameter1.Text = "Amplification (dB)";
-                    value1.Value = ((AmplifyParameters)parameters).mRatio;
-                    Parameter2.Visibility = Visibility.Hidden;
-                    value2.Visibility = Visibility.Hidden;
-                    Parameter3.Visibility = Visibility.Hidden;
-                    value3.Visibility = Visibility.Hidden;
-                    break;
-                case "Bass Boost":
-                    Parameter1.Text = "Bass (dB)";
-                    value1.Value = ((BassBoostParameters)parameters).bass;
-                    Parameter2.Visibility = Visibility.Hidden;
-                    value2.Visibility = Visibility.Hidden;
-                    Parameter3.Visibility = Visibility.Hidden;
-                    value3.Visibility = Visibility.Hidden;
-                    break;
-                case "Phaser":
-                    Parameter1.Text = "Stages";
-                    value1.Value = ((PhaserParams)parameters).stages;
-                    Parameter2.Text = "Dry Wet";
-                    value2.Value = ((PhaserParams)parameters).dryWet;
-                    Parameter3.Text = "Frequency";
-                    value3.Value = ((PhaserParams)parameters).freq;
-                    break;
-                case "Fade":
-                    Parameter1.Text = "Fade In";
-                    value1.Value = ((FadeParameters)parameters).mFadeIn;
-                    Parameter2.Text = "Fade out";
-                    value2.Value = ((FadeParameters)parameters).mFadeOut;
-                    Parameter3.Text = "Sample Count";
-                    value3.Value = ((FadeParameters)parameters).mSampleCnt;
-                    break;
-                default:
-                    // Not a valid Filter
-                    Parameter1.Visibility = Visibility.Hidden;
-                    value1.Visibility = Visibility.Hidden;
-                    Parameter2.Visibility = Visibility.Hidden;
-                    value2.Visibility = Visibility.Hidden;
-                    Parameter3.Visibility = Visibility.Hidden;
-                    value3.Visibility = Visibility.Hidden;
-                    break;
+                text = (TextBlock)this.FindName("Parameter" + count);
+                text.Text = parameter.name;
+                text.Visibility = Visibility.Visible;
+
+                slide = (Slider)this.FindName("value" + count);
+                slide.Value = parameter.value;
+                slide.Minimum = parameter.minValue;
+                slide.Maximum = parameter.maxValue;
+                slide.TickFrequency = parameter.frequency;
+                slide.Visibility = Visibility.Visible;
+
+                count++;
             }
         }
 
@@ -123,25 +97,19 @@ namespace GlitchArtEditor
             switch (filterType)
             {
                 case "Echo":
-                    ((EchoParameters)parameters).delay = value1.Value;
-                    ((EchoParameters)parameters).decay = (float)value2.Value;
-                    ((EchoParameters)parameters).histLen = Convert.ToInt32(value3.Value * 1000);
+                    parameters = new EchoParameters(value1.Value, (float)value2.Value, Convert.ToInt32(value3.Value));
                     break;
                 case "Amplify":
-                    ((AmplifyParameters)parameters).mRatio = (float)value1.Value;
+                    parameters = new AmplifyParameters((float)value1.Value);
                     break;
                 case "Bass Boost":
-                    ((BassBoostParameters)parameters).bass = value1.Value;
+                    parameters = new BassBoostParameters(value1.Value);
                     break;
                 case "Phaser":
-                    ((PhaserParams)parameters).stages = (int)value1.Value;
-                    ((PhaserParams)parameters).dryWet = (int)value2.Value;
-                    ((PhaserParams)parameters).freq = value3.Value;
+                    parameters = new PhaserParameters((int)value1.Value, (int)value2.Value, value3.Value);
                     break;
                 case "Fade":
-                    ((FadeParameters)parameters).mFadeIn = (int)value1.Value;
-                    ((FadeParameters)parameters).mFadeOut = (int)value2.Value;
-                    ((FadeParameters)parameters).mSampleCnt = (int)value3.Value;
+                    parameters = new FadeParameters((int)value1.Value, (int)value2.Value, (int)value3.Value);
                     break;
                 default:
                     // Not a valid Filter
