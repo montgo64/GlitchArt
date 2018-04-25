@@ -73,6 +73,17 @@ namespace GlitchArtEditor
             op.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
             if (op.ShowDialog() == true)
             {
+                long length = new System.IO.FileInfo(op.FileName).Length;
+                if (length > 500000)
+                {
+                    MessageBoxResult result = MessageBox.Show("Image exceeds 500KB and application may run slow. Continue?",
+                        "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.No)
+                    {
+                        return;
+                    }
+                }
+
                 int oldFilterNum = numFilters;
                 for (int i = 1; i <= oldFilterNum; i++)
                 {
