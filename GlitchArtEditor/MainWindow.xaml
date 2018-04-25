@@ -42,7 +42,6 @@
                 <MenuItem Header="Echo" Name="Echo" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Fade" Name="Fade" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Phaser" Name="Phaser" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
-                <MenuItem Header="Reverb" Name="Reverb" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
             </MenuItem>
         </Menu>
 
