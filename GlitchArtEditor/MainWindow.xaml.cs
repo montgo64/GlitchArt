@@ -11,6 +11,7 @@ using AmplifyEffect;
 using BassBoostEffect;
 using PhaserEffect;
 using FadeEffect;
+using DistortionEffect;
 using System.IO;
 
 using Microsoft.Win32;
@@ -459,6 +460,10 @@ namespace GlitchArtEditor
                 case "Fade":
                     Fade Fade = new Fade((FadeParameters)param);
                     Fade.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Distortion":
+                    Distortion distortion = new Distortion((DistortionParameters)param);
+                    distortion.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 default:
                     StatusText.Content = "Invalid filter";
