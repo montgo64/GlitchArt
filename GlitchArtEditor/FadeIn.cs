@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Effects;
+using FadeInEffect;
 
 namespace FadeInEffect
 {
@@ -20,8 +21,9 @@ namespace FadeInEffect
         /// </summary>
         public FadeInParameters()
         {
-            mFadeIn = 1.0f;
-            mSampleCnt = 0.0f;
+            mFadeIn = 1.0f;  
+            SetParams(new Dictionary<string, Parameter>() { { "Fade In",
+                    new Parameter { name = "Fade In", value =mFadeIn, minValue = 0, maxValue = 100, frequency = 1 } } });
         }
 
         /// <summary>
@@ -30,9 +32,12 @@ namespace FadeInEffect
 
         public FadeInParameters(float fadeIn )
         {
-           mFadeIn = fadeIn;
+           
+            SetParams(new Dictionary<string, Parameter>() { { "Fade In",
+                    new Parameter { name = "Fade In", value = fadeIn, minValue = 0, maxValue = 100, frequency = 1 } } });
         }
     }
+ //   }
 
     /// <summary>
     /// Class for FadeIn effect.
@@ -46,23 +51,24 @@ namespace FadeInEffect
         /// </summary>
         public FadeIn()
         {
-          //  mFadeIn = sin(1.0f);
+          
             mFadeIn = 1.0f;
-            mSampleCnt = 0.0f;
+          //  mSampleCnt = 0.0f;
         }
 
-      //  private float sin(float v)
-      //  {
-      //      throw new NotImplementedException();
-      //  }
-
+      
         /// <summary>
         /// Constructor. Stores parameter into variables.
         /// </summary>
-        public FadeIn(ref FadeInParameters ap)
+        public FadeIn( FadeInParameters ap)
         {
-            mFadeIn = ap.mFadeIn;
-            mSampleCnt = ap.mSampleCnt;
+           // mFadeIn = ap.mFadeIn;
+        //    mSampleCnt = ap.mSampleCnt;
+            
+             foreach (Parameter parameter in ap.GetParams().Values)
+              {
+                  mFadeIn = (float)parameter.value;
+             }
         }
 
         /// <summary>
@@ -85,7 +91,7 @@ namespace FadeInEffect
         /// Sets the parameters for Fade In effect
         /// </summary>
 
-        public void SetParameters(ref EffectParameters param)
+       public void SetParameters(ref EffectParameters param)
         {
             FadeInParameters fd = (FadeInParameters)param;
             mFadeIn = fd.mFadeIn;
@@ -100,5 +106,5 @@ namespace FadeInEffect
         {
             return (EffectParameters)new FadeInParameters(mFadeIn);
         }
-    }
+   }
 }

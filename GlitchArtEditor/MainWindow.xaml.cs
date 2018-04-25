@@ -10,7 +10,8 @@ using EchoEffect;
 using AmplifyEffect;
 using BassBoostEffect;
 using PhaserEffect;
-using FadeEffect;
+using FadeInEffect;
+using FadeOutEffect;
 using DistortionEffect;
 using System.IO;
 
@@ -276,8 +277,11 @@ namespace GlitchArtEditor
                     case "Phaser":
                         parameters = new PhaserParameters();
                         break;
-                    case "Fade":
-                        parameters = new FadeParameters();
+                    case "Fade In":
+                        parameters = new FadeInParameters();
+                        break;
+                    case "Fade Out":
+                        parameters = new FadeOutParameters();
                         break;
                     case "Distortion":
                         parameters = new DistortionParameters();
@@ -460,9 +464,13 @@ namespace GlitchArtEditor
                     Phaser Phaser = new Phaser((PhaserParameters)param);
                     Phaser.ProcessBlock(ref input, ref output, input.Length);
                     break;
-                case "Fade":
-                    Fade Fade = new Fade((FadeParameters)param);
-                    Fade.ProcessBlock(ref input, ref output, input.Length);
+                case "Fade In":
+                    FadeIn FadeIn = new FadeIn((FadeInParameters)param);
+                    FadeIn.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Fade Out":
+                    FadeOut FadeOut = new FadeOut((FadeOutParameters)param);
+                    FadeOut.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 case "Distortion":
                     Distortion distortion = new Distortion((DistortionParameters)param);
