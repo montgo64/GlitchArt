@@ -7,24 +7,37 @@ namespace DistortionEffect
     public class DistortionParameters : EffectParameters
     {
 
-        public float samplerate;
-        public int tablechoiceindx;
-        public bool dcblock;
-        public double threshold;
-        public double noisefloor;
-        public float param1;
-        public float param2;
-        public int repeats;
+        public DistortionParameters()
+        {
+            Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
+            parameters.Add("Sample Rate", new Parameter { name = "Sample Rate", value = 1, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Table Choice Index", new Parameter { name = "Table Choice Index", value = 0, minValue = 0, maxValue = 10, frequency = 1 });
+            parameters.Add("DC Block", new Parameter { name = "DC Block", value = 1, minValue = 0, maxValue = 1, frequency = 1 });
+            parameters.Add("Threshold", new Parameter { name = "Threshold", value = 0, minValue = -100, maxValue = 0, frequency = 1 });
+            parameters.Add("Noise Floor", new Parameter { name = "Noise Floor", value = -50, minValue = -80, maxValue = -20, frequency = 1 });
+            parameters.Add("Parameter 1", new Parameter { name = "Parameter 1", value = 0, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Parameter 2", new Parameter { name = "Parameter 2", value = 0, minValue = 0, maxValue = 10, frequency = 1 });
+            parameters.Add("Repeats", new Parameter { name = "Repeats", value = 0, minValue = 0, maxValue = 5, frequency = 1 });
 
-        public DistortionParameters() {
-            samplerate = 100;
-            tablechoiceindx = 2;
-            dcblock = true;
-            threshold = -6.0;
-            noisefloor = -70.0;
-            param1 = 50.0F;
-            param2 = 50.0F;
-            repeats = 1;
+            SetParams(parameters);
+        }
+
+        /// <summary>
+        /// Constructor. Sets parameters for stages, dryWet, and freq.
+        /// </summary>
+        public DistortionParameters(float samplerate, int tablechoice, double dcblock, double threshold, double noisefloor, float param1, float param2, int repeats )
+        {
+            Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
+            parameters.Add("Sample Rate", new Parameter { name = "Sample Rate", value = samplerate, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Table Choice Index", new Parameter { name = "Table Choice Index", value = tablechoice, minValue = 0, maxValue = 10, frequency = 1 });
+            parameters.Add("DC Block", new Parameter { name = "DC Block", value = dcblock, minValue = 0, maxValue = 1, frequency = 1 });
+            parameters.Add("Threshold", new Parameter { name = "Threshold", value = threshold, minValue = -100, maxValue = 0, frequency = 1 });
+            parameters.Add("Noise Floor", new Parameter { name = "Noise Floor", value = noisefloor, minValue = -80, maxValue = -20, frequency = 1 });
+            parameters.Add("Parameter 1", new Parameter { name = "Parameter 1", value = param1, minValue = 0, maxValue = 100, frequency = 1 });
+            parameters.Add("Parameter 2", new Parameter { name = "Parameter 2", value = param2, minValue = 0, maxValue = 10, frequency = 1 });
+            parameters.Add("Repeats", new Parameter { name = "Repeats", value = repeats, minValue = 0, maxValue = 5, frequency = 1 });
+
+            SetParams(parameters);
         }
     }
 
@@ -80,49 +93,56 @@ namespace DistortionEffect
 
         public Distortion(DistortionParameters p)
         {
-            samplerate = p.samplerate;
-            tablechoiceindx = p.tablechoiceindx;
-            dcblock = p.dcblock;
-            threshold = p.threshold;
-            noisefloor = p.noisefloor;
-            param1 = p.param1;
-            param2 = p.param2;
-            repeats = p.repeats;
+            samplerate = 0;
+            tablechoiceindx = 0;
+            dcblock = true;
+            threshold = 0;
+            noisefloor = 0;
+            param1 = 0;
+            param2 = 0;
+            repeats = 0;
 
+            foreach (Parameter parameter in p.GetParams().Values)
+            {
+                if (parameter.name.Equals("Sample Rate"))
+                {
+                    samplerate = (float)parameter.value;
+                }
+                else if (parameter.name.Equals("Table Choice Index"))
+                {
+                    tablechoiceindx = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("DC Block"))
+                {
+                    if (parameter.value == 0)
+                    {
+                        dcblock = false;
+                    }
+                }
+                else if (parameter.name.Equals("Threshold"))
+                {
+                    threshold = parameter.value;
+                }
+                else if (parameter.name.Equals("Noise Floor"))
+                {
+                    noisefloor = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("Parameter 1"))
+                {
+                    param1 = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("Parameter 2"))
+                {
+                    param2 = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("Repeats"))
+                {
+                    repeats = (int)parameter.value;
+                }
+            }
+            
             queuesamples = new Queue<float>();
             MakeTable();
-        }
-
-        public void SetParameters(ref EffectParameters par)
-        {
-            DistortionParameters p = (DistortionParameters)par;
-            samplerate = p.samplerate;
-            tablechoiceindx = p.tablechoiceindx;
-            dcblock = p.dcblock;
-            threshold = p.threshold;
-            noisefloor = p.noisefloor;
-            param1 = p.param1;
-            param2 = p.param2;
-            repeats = p.repeats;
-
-            queuesamples = new Queue<float>();
-            MakeTable();
-        }
-
-        public EffectParameters GetParameters()
-        {
-            DistortionParameters p = new DistortionParameters();
-
-            p.samplerate = samplerate;
-            p.tablechoiceindx = tablechoiceindx;
-            p.dcblock = dcblock;
-            p.threshold = threshold;
-            p.noisefloor = noisefloor;
-            p.param1 = param1;
-            p.param2 = param2;
-            p.repeats = repeats;
-
-            return (EffectParameters)p;
         }
 
         public void ProcessBlock(ref FloatToInt[] input, ref FloatToInt[] output, int length)

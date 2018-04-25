@@ -22,6 +22,7 @@ using AmplifyEffect;
 using BassBoostEffect;
 using PhaserEffect;
 using FadeEffect;
+using DistortionEffect;
 using System.Threading;
 
 namespace GlitchArtEditor
@@ -64,6 +65,16 @@ namespace GlitchArtEditor
             value2.Visibility = Visibility.Hidden;
             Parameter3.Visibility = Visibility.Hidden;
             value3.Visibility = Visibility.Hidden;
+            Parameter4.Visibility = Visibility.Hidden;
+            value4.Visibility = Visibility.Hidden;
+            Parameter5.Visibility = Visibility.Hidden;
+            value5.Visibility = Visibility.Hidden;
+            Parameter6.Visibility = Visibility.Hidden;
+            value6.Visibility = Visibility.Hidden;
+            Parameter7.Visibility = Visibility.Hidden;
+            value7.Visibility = Visibility.Hidden;
+            Parameter8.Visibility = Visibility.Hidden;
+            value8.Visibility = Visibility.Hidden;
 
             int count = 1;
             TextBlock text;
@@ -106,10 +117,13 @@ namespace GlitchArtEditor
                     parameters = new BassBoostParameters(value1.Value);
                     break;
                 case "Phaser":
-                    parameters = new PhaserParameters((int)value1.Value, (int)value2.Value, value3.Value);
+                    parameters = new PhaserParameters((int)value1.Value, (int)value2.Value, value3.Value, value4.Value, (int)value5.Value, (int)value6.Value, value7.Value);
                     break;
                 case "Fade":
                     parameters = new FadeParameters((int)value1.Value, (int)value2.Value, (int)value3.Value);
+                    break;
+                case "Distortion":
+                    parameters = new DistortionParameters((float)value1.Value, (int)value2.Value, value3.Value, value4.Value, value5.Value, (float)value6.Value, (float)value7.Value, (int)value8.Value);
                     break;
                 default:
                     // Not a valid Filter

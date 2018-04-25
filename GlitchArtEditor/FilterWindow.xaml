@@ -5,39 +5,75 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlitchArtEditor"
         mc:Ignorable="d"
-        Title="FilterWindow"  Height="360" Width="500" Margin="0" WindowStartupLocation="CenterScreen">
+        Title="FilterWindow"  Height="676" Width="500" Margin="0" WindowStartupLocation="CenterScreen">
 
-    <Grid Margin="0" Background="LightGray">
+    <Grid Background="LightGray" Height="646" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Title" Name="FilterTitle" Margin="12,0,0,399" FontSize="24" Height="35"/>
+        <TextBlock Text="Title" Name="FilterTitle" Margin="12,0,0,833" FontSize="24" Height="35"/>
 
-        <TextBlock Text="Parameter 1" Name="Parameter1" Margin="12,55,0,358" FontSize="20"/>
-        <DockPanel Grid.Column="0" Margin="0,87,0,325">
+        <TextBlock Text="Parameter 1" Name="Parameter1" Margin="12,55,0,795" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,87,0,765">
             <TextBox Text="{Binding ElementName=value1, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
                      Margin="0,0,14,0" Height="20" />
             <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value1" Width="398" Height="20" />
         </DockPanel>
 
-        <TextBlock Text="Parameter 2" Name="Parameter2" Margin="12,120,0,292" FontSize="20"/>
-        <DockPanel Grid.Column="0" Margin="0,153,0,257">
+        <TextBlock Text="Parameter 2" Name="Parameter2" Margin="12,116,0,733" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,148,0,698">
             <TextBox Text="{Binding ElementName=value2, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
                      Margin="0,0,14,0" Height="20" />
             <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value2" Width="398" Height="20" />
         </DockPanel>
 
-        <TextBlock Text="Parameter 3" Name="Parameter3" Margin="12,188,0,225" FontSize="20"/>
-        <DockPanel Grid.Column="0" Margin="0,220,0,193">
+        <TextBlock Text="Parameter 3" Name="Parameter3" Margin="12,188,0,660" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,220,0,638">
             <TextBox Text="{Binding ElementName=value3, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
                      Margin="0,0,14,0" Height="20" />
             <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value3" Width="398" Height="20" />
         </DockPanel>
 
-        <Button Name="ApplyButton" Height="40" Content="Apply" Margin="10,140,340,0" Click="ApplyFilter" FontSize="20"/>
-        <Button Name="CancelButton" Height="40" Content="Cancel" Margin="170,140,170,0" Click="CancelFilter" FontSize="20"/>
-        <Button Name="RemoveButton" Height="40" Content="Remove" Margin="340,140,10,0 " Click="RemoveFilter" FontSize="20"/>
+        <TextBlock Text="Parameter 4" Name="Parameter4" Margin="12,248,0,602" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,284,0,567">
+            <TextBox Text="{Binding ElementName=value4, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
+                     Margin="0,0,14,0" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value4" Width="398" Height="20" />
+        </DockPanel>
+
+
+        <TextBlock Text="Parameter 5" Name="Parameter5" Margin="12,319,0,533" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,353,0,503">
+            <TextBox Text="{Binding ElementName=value5, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
+                     Margin="0,0,14,0" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value5" Width="398" Height="20" />
+        </DockPanel>
+
+        <TextBlock Text="Parameter 6" Name="Parameter6" Margin="12,383,0,467" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,419,0,434">
+            <TextBox Text="{Binding ElementName=value6, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
+                     Margin="0,0,14,0" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value6" Width="398" Height="20" />
+        </DockPanel>
+
+        <TextBlock Text="Parameter 7" Name="Parameter7" Margin="12,452,0,397" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,487,0,370">
+            <TextBox Text="{Binding ElementName=value7, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
+                     Margin="0,0,14,0" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value7" Width="398" Height="20" />
+        </DockPanel>
+
+        <TextBlock Text="Parameter 8" Name="Parameter8" Margin="12,511,0,337" FontSize="20"/>
+        <DockPanel Grid.Column="0" Margin="0,544,0,308">
+            <TextBox Text="{Binding ElementName=value8, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40"
+                     Margin="0,0,14,0" Height="20" />
+            <Slider Maximum="100" Minimum="1" TickFrequency="1"  IsSnapToTickEnabled="True" Name="value8" Width="398" Height="20" />
+        </DockPanel>
+
+        <Button Name="ApplyButton" Content="Apply" Margin="10,589,340,246" Click="ApplyFilter" FontSize="20"/>
+        <Button Name="CancelButton" Content="Cancel" Margin="170,589,170,246" Click="CancelFilter" FontSize="20"/>
+        <Button Name="RemoveButton" Content="Remove" Margin="340,589,10,246" Click="RemoveFilter" FontSize="20"/>
     </Grid>
 </Window>

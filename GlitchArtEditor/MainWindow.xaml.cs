@@ -279,6 +279,9 @@ namespace GlitchArtEditor
                     case "Fade":
                         parameters = new FadeParameters();
                         break;
+                    case "Distortion":
+                        parameters = new DistortionParameters();
+                        break;
                     default:
                         StatusText.Content = filterType + " is an invalid filter. ";
                         return;
