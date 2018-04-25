@@ -26,9 +26,13 @@ namespace PhaserEffect
         public PhaserParameters()
         {
             Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
-            parameters.Add("Stages", new Parameter { name = "Stages", value = 0, minValue = 0, maxValue = 100, frequency = 1 });
-            parameters.Add("Dry Wet", new Parameter { name = "Dry Wet", value = 0, minValue = 0, maxValue = 100, frequency = 1 });
-            parameters.Add("Frequency", new Parameter { name = "Frequency", value = 1, minValue = 1, maxValue = 100, frequency = 1 });
+            parameters.Add("Stages", new Parameter { name = "Stages", value = 2, minValue = 2, maxValue = 24, frequency = 2 });
+            parameters.Add("Dry Wet", new Parameter { name = "Dry Wet", value = 128, minValue = 0, maxValue = 255, frequency = 1 });
+            parameters.Add("Frequency", new Parameter { name = "Frequency", value = 1, minValue = 1, maxValue = 4, frequency = 0.1 });
+            parameters.Add("Start Phase", new Parameter { name = "Start Phase", value = 0, minValue = 0, maxValue = 360, frequency = 10 });
+            parameters.Add("Depth", new Parameter { name = "Depth", value = 100, minValue = 0, maxValue = 255, frequency = 1 });
+            parameters.Add("Feedback", new Parameter { name = "Feedback", value = 0, minValue = -100, maxValue = 100, frequency = 10 });
+            parameters.Add("Output Gain", new Parameter { name = "Output Gain", value = -6, minValue = -30, maxValue = 30, frequency = 1 });
 
             SetParams(parameters);
         }
@@ -36,12 +40,16 @@ namespace PhaserEffect
         /// <summary>
         /// Constructor. Sets parameters for stages, dryWet, and freq.
         /// </summary>
-        public PhaserParameters(int stages, int dryWet, double freq)
+        public PhaserParameters(int stages, int dryWet, double freq, double phase, int depth, int feedback, double outGain)
         {
             Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
             parameters.Add("Stages", new Parameter { name = "Stages", value = stages, minValue = 0, maxValue = 100, frequency = 1 });
             parameters.Add("Dry Wet", new Parameter { name = "Dry Wet", value = dryWet, minValue = 0, maxValue = 100, frequency = 1 });
             parameters.Add("Frequency", new Parameter { name = "Frequency", value = freq, minValue = 1, maxValue = 100, frequency = 1 });
+            parameters.Add("Start Phase", new Parameter { name = "Start Phase", value = phase, minValue = 0, maxValue = 360, frequency = 10 });
+            parameters.Add("Depth", new Parameter { name = "Depth", value = 100, minValue = depth, maxValue = 255, frequency = 1 });
+            parameters.Add("Feedback", new Parameter { name = "Feedback", value = feedback, minValue = -100, maxValue = 100, frequency = 10 });
+            parameters.Add("Output Gain", new Parameter { name = "Output Gain", value = outGain, minValue = -30, maxValue = 30, frequency = 1 });
 
             SetParams(parameters);
         }
@@ -91,24 +99,35 @@ namespace PhaserEffect
             state.laststages = 0;
             state.outgain = 0;
 
-            mPhase = 0;
-            mDepth = 0;
-            mFeedback = 0;
-            mOutGain = 0;
-
             foreach (Parameter parameter in phaser.GetParams().Values)
             {
-                if (parameter.name.Equals("Fade In"))
+                if (parameter.name.Equals("Stages"))
                 {
                     mStages = (int)parameter.value;
                 }
-                else if (parameter.name.Equals("Fade Out"))
+                else if (parameter.name.Equals("Dry Wet"))
                 {
                     mDryWet = (int)parameter.value;
                 }
-                else if (parameter.name.Equals("Sample Count"))
+                else if (parameter.name.Equals("Frequency"))
                 {
                     mFreq = parameter.value;
+                }
+                else if (parameter.name.Equals("Start Phase"))
+                {
+                    mPhase = parameter.value;
+                }
+                else if (parameter.name.Equals("Depth"))
+                {
+                    mDepth = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("Feedback"))
+                {
+                    mFeedback = (int)parameter.value;
+                }
+                else if (parameter.name.Equals("Output Gain"))
+                {
+                    mOutGain = parameter.value;
                 }
             }
         }
