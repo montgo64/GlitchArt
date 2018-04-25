@@ -11,6 +11,7 @@ using AmplifyEffect;
 using BassBoostEffect;
 using PhaserEffect;
 using FadeEffect;
+using DistortionEffect;
 using System.IO;
 
 using Microsoft.Win32;
@@ -73,6 +74,17 @@ namespace GlitchArtEditor
             op.Filter = "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg";
             if (op.ShowDialog() == true)
             {
+                long length = new System.IO.FileInfo(op.FileName).Length;
+                if (length > 500000)
+                {
+                    MessageBoxResult result = MessageBox.Show("Image exceeds 500KB and application may run slow. Continue?",
+                        "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (result == MessageBoxResult.No)
+                    {
+                        return;
+                    }
+                }
+
                 int oldFilterNum = numFilters;
                 for (int i = 1; i <= oldFilterNum; i++)
                 {
@@ -448,6 +460,10 @@ namespace GlitchArtEditor
                 case "Fade":
                     Fade Fade = new Fade((FadeParameters)param);
                     Fade.ProcessBlock(ref input, ref output, input.Length);
+                    break;
+                case "Distortion":
+                    Distortion distortion = new Distortion((DistortionParameters)param);
+                    distortion.ProcessBlock(ref input, ref output, input.Length);
                     break;
                 default:
                     StatusText.Content = "Invalid filter";

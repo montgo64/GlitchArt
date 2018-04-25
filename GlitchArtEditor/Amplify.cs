@@ -65,9 +65,10 @@ namespace AmplifyEffect
         /// </summary>
         public void ProcessBlock(ref FloatToInt[] input, ref FloatToInt[] output, int length)
         {
+            double ratio = 1.0 + mRatio / 100.0;
             for (int i = 0; i < length; i++)
             {
-                output[i].FloatVal = (input[i].FloatVal * mRatio);
+                output[i].FloatVal = (float)(input[i].FloatVal * ratio);
             }
         }
     }
