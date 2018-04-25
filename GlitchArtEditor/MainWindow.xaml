@@ -40,7 +40,8 @@
                 <MenuItem Header="Amplify" Name="Amplify" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Bass Boost" Name="BassBoost" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Echo" Name="Echo" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
-                <MenuItem Header="Fade" Name="Fade" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Fade In" Name="FadeIn" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
+                <MenuItem Header="Fade Out" Name="FadeOut" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Phaser" Name="Phaser" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
                 <MenuItem Header="Distortion" Name="Distortion" Click="FilterSelect" Style="{StaticResource InnerMenuItem}"/>
             </MenuItem>

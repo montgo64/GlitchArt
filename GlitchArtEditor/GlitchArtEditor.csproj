@@ -70,7 +70,8 @@
     </Compile>
     <Compile Include="BassBoost.cs" />
     <Compile Include="Distortion.cs" />
-    <Compile Include="Fade.cs" />
+    <Compile Include="FadeIn.cs" />
+    <Compile Include="FadeOut.cs" />
     <Compile Include="Phaser.cs" />
     <Compile Include="Echo.cs" />
     <Compile Include="Effect.cs" />

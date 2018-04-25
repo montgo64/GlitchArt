@@ -12,11 +12,11 @@ namespace DistortionEffect
             Dictionary<string, Parameter> parameters = new Dictionary<string, Parameter>();
             parameters.Add("Sample Rate", new Parameter { name = "Sample Rate", value = 1, minValue = 0, maxValue = 100, frequency = 1 });
             parameters.Add("Table Choice Index", new Parameter { name = "Table Choice Index", value = 0, minValue = 0, maxValue = 10, frequency = 1 });
-            parameters.Add("DC Block", new Parameter { name = "DC Block", value = 1, minValue = 0, maxValue = 1, frequency = 1 });
+            parameters.Add("DC Block", new Parameter { name = "DC Block", value = 0, minValue = 0, maxValue = 1, frequency = 1 });
             parameters.Add("Threshold", new Parameter { name = "Threshold", value = 0, minValue = -100, maxValue = 0, frequency = 1 });
             parameters.Add("Noise Floor", new Parameter { name = "Noise Floor", value = -50, minValue = -80, maxValue = -20, frequency = 1 });
             parameters.Add("Parameter 1", new Parameter { name = "Parameter 1", value = 0, minValue = 0, maxValue = 100, frequency = 1 });
-            parameters.Add("Parameter 2", new Parameter { name = "Parameter 2", value = 0, minValue = 0, maxValue = 10, frequency = 1 });
+            parameters.Add("Parameter 2", new Parameter { name = "Parameter 2", value = 0, minValue = 0, maxValue = 100, frequency = 1 });
             parameters.Add("Repeats", new Parameter { name = "Repeats", value = 0, minValue = 0, maxValue = 5, frequency = 1 });
 
             SetParams(parameters);
@@ -34,7 +34,7 @@ namespace DistortionEffect
             parameters.Add("Threshold", new Parameter { name = "Threshold", value = threshold, minValue = -100, maxValue = 0, frequency = 1 });
             parameters.Add("Noise Floor", new Parameter { name = "Noise Floor", value = noisefloor, minValue = -80, maxValue = -20, frequency = 1 });
             parameters.Add("Parameter 1", new Parameter { name = "Parameter 1", value = param1, minValue = 0, maxValue = 100, frequency = 1 });
-            parameters.Add("Parameter 2", new Parameter { name = "Parameter 2", value = param2, minValue = 0, maxValue = 10, frequency = 1 });
+            parameters.Add("Parameter 2", new Parameter { name = "Parameter 2", value = param2, minValue = 0, maxValue = 100, frequency = 1 });
             parameters.Add("Repeats", new Parameter { name = "Repeats", value = repeats, minValue = 0, maxValue = 5, frequency = 1 });
 
             SetParams(parameters);
